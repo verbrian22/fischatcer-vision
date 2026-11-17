@@ -3,104 +3,113 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0E3B2C">
+  <meta name="theme-color" content="#0A3B30">
   <title>FISCHATCER VISION</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231B9C8E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12c3-5 9-6 14-2l4-3v10l-4-3c-5 4-11 3-14-2z'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230C7C7A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12c3-5 9-6 14-2l4-3v10l-4-3c-5 4-11 3-14-2z'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+  <style>
 :root {
-  --hijau-tua: #0E3B2C;
-  --hijau: #175A44;
-  --teal: #1B9C8E;
-  --teal-tua: #10695F;
-  --mint: #E6F2EE;
-  --latar: #F4F9F7;
+  --air: #0A3B30;
+  --daun: #1D5A47;
+  --teal: #0C7C7A;
+  --teal-terang: #5FD0C8;
   --putih: #FFFFFF;
-  --teks: #14261F;
-  --lembut: #4B6159;
-  --garis: #D2E1DB;
+  --kabut: #EEF5F2;
+  --teks: #10231D;
+  --lembut: #4A6058;
+  --garis: #CCDAD4;
   --bahaya: #A63A2B;
   --amber: #7A4F00;
-  --amber-muda: #FBF1DC;
+  --amber-bg: #FBF1DC;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   color: var(--teks);
-  background: var(--latar);
+  background: var(--putih);
 }
 [hidden] { display: none !important; }
-h1, h2, h3 { line-height: 1.2; margin: 0; }
-h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-h3 { font-size: 1.05rem; font-weight: 700; margin: 28px 0 10px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.015em; }
+h2 { font-size: 2rem; font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 700; margin: 40px 0 6px; }
 p { margin: 0 0 12px; max-width: 62ch; }
 .lembut { color: var(--lembut); }
-
+.tanggal { margin: 6px 0 0; color: var(--lembut); }
 :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 
 /* ---------- pemuat & toast ---------- */
 .pemuat { padding: 40vh 20px 0; text-align: center; color: var(--lembut); }
 .toast {
   position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
-  max-width: min(92vw, 420px); padding: 12px 18px; border-radius: 10px;
-  background: var(--hijau-tua); color: #fff; font-weight: 600; z-index: 50;
+  max-width: min(92vw, 420px); padding: 12px 18px; border-radius: 4px;
+  background: var(--air); color: #fff; font-weight: 600; z-index: 50;
 }
 
 /* ---------- form ---------- */
-label { display: block; font-weight: 600; margin: 14px 0 6px; }
-input, select {
+label { display: block; font-weight: 600; margin: 16px 0 6px; }
+input, select, textarea {
   width: 100%; min-height: 46px; padding: 0 14px;
   font: inherit; color: var(--teks); background: var(--putih);
-  border: 1.5px solid var(--garis); border-radius: 10px;
+  border: 1.5px solid var(--garis); border-radius: 4px;
 }
-input[readonly] { background: var(--mint); color: var(--lembut); }
-input:focus, select:focus { border-color: var(--teal); }
+textarea { padding: 10px 14px; resize: vertical; }
+input[readonly] { background: var(--kabut); color: var(--lembut); }
+input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 .galat { margin: 12px 0 0; color: var(--bahaya); font-weight: 600; }
 .catatan { margin-top: 18px; font-size: .9rem; color: var(--lembut); }
 
 .tombol {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 46px; padding: 0 22px; margin-top: 18px;
-  font: inherit; font-weight: 700; color: #fff; background: var(--teal-tua);
-  border: 0; border-radius: 10px; cursor: pointer;
+  font: inherit; font-weight: 700; color: #fff; background: var(--air);
+  border: 0; border-radius: 4px; cursor: pointer;
 }
-.tombol:hover { background: var(--hijau); }
+.tombol:hover { background: var(--daun); }
 .tombol[disabled] { opacity: .6; cursor: progress; }
-.tombol.sekunder { background: var(--putih); color: var(--hijau-tua); border: 1.5px solid var(--garis); }
-.tombol.sekunder:hover { background: var(--mint); }
-.masuk .tombol { width: 100%; }
+.tombol.sekunder { background: var(--putih); color: var(--air); border: 1.5px solid var(--air); }
+.tombol.sekunder:hover { background: var(--kabut); }
+.tombol.kecil { min-height: 36px; padding: 0 14px; margin-top: 8px; font-size: .9rem; }
 .tautan {
-  background: none; border: 0; padding: 8px 0; margin-bottom: 8px;
-  font: inherit; font-weight: 600; color: var(--teal-tua); cursor: pointer; text-decoration: underline;
+  background: none; border: 0; padding: 8px 0; margin-bottom: 10px;
+  font: inherit; font-weight: 600; color: var(--teal); cursor: pointer; text-decoration: underline;
+}
+
+/* ---------- skala penggaris (ciri khas) ---------- */
+.skala {
+  display: block; height: 14px;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.9) 1px, transparent 1px);
+  background-size: 8px 7px, 40px 14px;
+  background-repeat: repeat-x;
+  background-position: left bottom;
 }
 
 /* ---------- layar masuk ---------- */
-.masuk { min-height: 100vh; display: flex; flex-direction: column; background: var(--putih); }
-.hero {
-  position: relative; overflow: hidden; background: var(--hijau-tua); color: #fff;
-  padding: 44px 24px 36px; min-height: 220px;
-}
-.riak { position: absolute; right: -40px; top: -20px; width: 420px; max-width: none; height: auto; }
-.hero-teks { position: relative; max-width: 460px; }
-.hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: .01em; }
-.hero p { margin-top: 10px; color: #CFE6DE; }
-.panel-masuk { padding: 28px 24px 40px; width: 100%; max-width: 440px; margin: 0 auto; }
-.panel-masuk h2 { margin-bottom: 4px; }
+.masuk { min-height: 100vh; display: flex; flex-direction: column; background: var(--air); color: #fff; }
+.bidang { position: relative; padding: 36px 24px 0; flex: none; }
+.bidang h1 { font-size: 2.1rem; font-weight: 800; }
+.bidang p { margin-top: 10px; color: #BFE0D6; max-width: 34ch; }
+.bak { display: block; width: 100%; max-width: 560px; height: auto; margin: 18px auto 0; }
+.panel-masuk { background: var(--putih); color: var(--teks); padding: 28px 24px 44px; flex: 1; }
+.panel-masuk form { max-width: 400px; }
+.panel-masuk h2 { font-size: 1.5rem; }
+.masuk .tombol { width: 100%; }
 
 /* ---------- bar & navigasi ---------- */
-.bar { background: var(--hijau-tua); color: #fff; }
+.bar { background: var(--air); color: #fff; }
 .bar-isi {
-  max-width: 980px; margin: 0 auto; padding: 12px 20px;
+  max-width: 900px; margin: 0 auto; padding: 14px 20px 12px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .merek { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .01em; }
-.logo { display: inline-flex; width: 30px; height: 30px; color: #7ED6C9; }
+.logo { display: inline-flex; width: 28px; height: 28px; color: var(--teal-terang); }
 .logo svg, .nav svg, .ikon-fitur svg { width: 100%; height: 100%; }
 
 .nav {
@@ -111,81 +120,101 @@ input:focus, select:focus { border-color: var(--teal); }
 .nav button {
   flex: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   font: inherit; font-size: .8rem; font-weight: 600; color: var(--lembut);
-  background: none; border: 0; cursor: pointer;
+  background: none; border: 0; border-top: 3px solid transparent; cursor: pointer;
 }
 .nav button [data-ikon] { width: 24px; height: 24px; display: inline-flex; }
-.nav button[aria-current="page"] { color: var(--teal-tua); font-weight: 800; }
+.nav button[aria-current="page"] { color: var(--teal); border-top-color: var(--teal); font-weight: 800; }
 
 /* ---------- isi ---------- */
-.isi { max-width: 980px; margin: 0 auto; padding: 24px 20px 110px; }
+.isi { max-width: 900px; margin: 0 auto; padding: 28px 20px 110px; }
 
-.fitur { display: grid; gap: 12px; margin-top: 18px; }
-.kartu {
-  display: flex; gap: 14px; align-items: flex-start; width: 100%;
-  padding: 16px; text-align: left; font: inherit; color: inherit;
-  background: var(--putih); border: 1.5px solid var(--garis); border-radius: 14px; cursor: pointer;
+.fitur { margin-top: 22px; border-top: 2px solid var(--air); }
+.baris-fitur {
+  display: grid; grid-template-columns: 56px 1fr auto; gap: 18px; align-items: center;
+  width: 100%; padding: 20px 6px; text-align: left; font: inherit; color: inherit;
+  background: none; border: 0; border-bottom: 1px solid var(--garis); cursor: pointer;
 }
-.kartu:hover { border-color: var(--teal); }
-.ikon-fitur {
-  flex: none; width: 48px; height: 48px; padding: 11px; border-radius: 50%;
-  background: var(--mint); color: var(--teal-tua);
-}
-.kartu strong { display: block; font-size: 1.05rem; }
-.kartu span.ket { display: block; color: var(--lembut); font-size: .92rem; margin-top: 2px; }
-.lencana {
-  display: inline-block; margin-top: 8px; padding: 2px 10px; border-radius: 99px;
-  font-size: .78rem; font-weight: 700; background: var(--amber-muda); color: var(--amber);
-}
+.baris-fitur:hover { background: var(--kabut); }
+.baris-fitur strong { display: block; font-size: 1.2rem; font-weight: 700; }
+.baris-fitur .ket { display: block; color: var(--lembut); font-size: .93rem; margin-top: 2px; }
+.baris-fitur .jumlah { text-align: right; line-height: 1.1; }
+.baris-fitur .jumlah b { display: block; font-size: 1.7rem; font-weight: 800; color: var(--daun); }
+.baris-fitur .jumlah span { font-size: .8rem; color: var(--lembut); }
 
-.ringkasan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.ringkasan div { padding: 12px 14px; background: var(--putih); border: 1.5px solid var(--garis); border-radius: 12px; }
-.ringkasan b { display: block; font-size: 1.6rem; font-weight: 800; color: var(--hijau); line-height: 1.1; }
-.ringkasan span { font-size: .82rem; color: var(--lembut); }
+/* ikon dengan dua sudut bingkai bidik */
+.ikon-fitur { position: relative; display: block; width: 56px; height: 56px; padding: 10px; color: var(--teal); }
+.ikon-fitur::before, .ikon-fitur::after { content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid var(--teal); }
+.ikon-fitur::before { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.ikon-fitur::after { right: 0; bottom: 0; border-left: 0; border-top: 0; }
 
-.daftar { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.daftar li { padding: 14px 16px; background: var(--putih); border: 1.5px solid var(--garis); border-radius: 12px; }
-.daftar .atas { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.daftar .judul { font-weight: 700; }
-.daftar .waktu { color: var(--lembut); font-size: .88rem; }
-.daftar .hasil { margin-top: 4px; font-size: 1.1rem; font-weight: 800; color: var(--hijau); }
-.daftar .catatan-baris { margin: 6px 0 0; font-size: .9rem; color: var(--lembut); }
+/* ---------- daftar catatan ---------- */
+.daftar { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--air); }
+.daftar li { display: grid; grid-template-columns: 68px 1fr; gap: 14px; padding: 16px 4px; border-bottom: 1px solid var(--garis); }
+.tgl { line-height: 1.15; }
+.tgl b { display: block; font-size: 1.9rem; font-weight: 800; color: var(--daun); }
+.tgl span { display: block; font-size: .78rem; color: var(--lembut); }
+.rincian { min-width: 0; }
+.rincian .judul { font-weight: 700; overflow-wrap: anywhere; }
+.rincian .hasil { font-size: 1.1rem; font-weight: 800; color: var(--daun); }
+.catatan-baris { margin: 4px 0 0; font-size: .9rem; color: var(--lembut); }
 .chip {
-  display: inline-block; margin-top: 8px; padding: 2px 10px; border-radius: 99px;
-  font-size: .78rem; font-weight: 700; background: var(--mint); color: var(--hijau);
+  display: inline-block; margin-top: 8px; padding: 1px 8px; border: 1px solid var(--garis);
+  border-radius: 2px; font-size: .78rem; font-weight: 600; color: var(--daun);
 }
-.chip.uji { background: var(--amber-muda); color: var(--amber); }
-.kosong { padding: 22px 16px; text-align: center; color: var(--lembut); background: var(--putih); border: 1.5px dashed var(--garis); border-radius: 12px; max-width: none; }
+.chip.uji { border-color: #E0C58A; background: var(--amber-bg); color: var(--amber); }
+.kosong { padding: 24px 4px; color: var(--lembut); border-bottom: 1px dashed var(--garis); max-width: none; }
+.foto-gambar { display: block; max-width: 100%; margin-top: 10px; border-radius: 2px; }
 
-.status-fitur { padding: 12px 14px; background: var(--amber-muda); color: var(--amber); border-radius: 10px; font-weight: 600; }
+.status-fitur { padding: 12px 14px; background: var(--amber-bg); color: var(--amber); border-left: 4px solid var(--amber); font-weight: 600; }
 .poin { margin: 0; padding-left: 20px; }
 .poin li { margin-bottom: 6px; }
 
 .saring { display: grid; gap: 4px 12px; margin: 14px 0; }
 .saring .tombol { margin-top: 10px; }
 
-.meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 22px 0 0; font-size: .92rem; }
+.meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 22px 0; font-size: .92rem; }
 .meta dt { color: var(--lembut); }
 .meta dd { margin: 0; font-weight: 600; }
 .versi { margin-top: 28px; font-size: .82rem; color: var(--lembut); }
 #v-profil form { max-width: 440px; }
 
+/* ---------- kamera: bingkai bidik ---------- */
+.kam-area { margin-top: 8px; max-width: 640px; }
+.bidik { position: relative; background: #06241D; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+.bidik video, .bidik img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.kam-kosong { color: #BFE0D6; padding: 16px; text-align: center; }
+.sudut { position: absolute; width: 30px; height: 30px; border: 3px solid var(--teal-terang); pointer-events: none; z-index: 2; }
+.sudut.a { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+.sudut.b { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+.sudut.c { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+.sudut.d { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+.aksi-kamera { display: flex; flex-wrap: wrap; gap: 10px; }
+.aksi-kamera .tombol { flex: 1 1 150px; }
+.aksi-live { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.aksi-live .tombol { margin-top: 0; flex: 1 1 0; padding: 0 10px; }
+.rana {
+  flex: none; width: 76px; height: 76px; border-radius: 50%; cursor: pointer;
+  background: var(--teal); border: 5px solid #fff; outline: 3px solid var(--teal);
+}
+.rana:hover { background: var(--daun); outline-color: var(--daun); }
+
 /* ---------- layar lebar ---------- */
 @media (min-width: 760px) {
   .masuk { flex-direction: row; }
-  .hero { flex: 1.1; display: flex; align-items: flex-end; padding: 56px 48px; min-height: 100vh; }
-  .riak { right: -60px; top: 6%; width: 640px; }
-  .hero h1 { font-size: 2.6rem; }
-  .panel-masuk { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 520px; padding: 40px 48px; margin: 0; }
+  .bidang { flex: 1.2; display: flex; flex-direction: column; justify-content: center; padding: 56px 48px; }
+  .bidang h1 { font-size: 2.8rem; }
+  .bak { margin: 28px 0 0; }
+  .masuk > .skala { display: none; }
+  .panel-masuk { flex: 1; max-width: 520px; display: flex; flex-direction: column; justify-content: center; padding: 48px; }
 
-  .nav { position: static; background: none; border: 0; padding: 0; display: flex; gap: 4px; }
-  .nav button { flex: none; flex-direction: row; gap: 8px; min-height: 40px; padding: 0 14px; font-size: .95rem; color: #CFE6DE; border-radius: 8px; }
-  .nav button:hover { background: rgba(255,255,255,.1); }
-  .nav button[aria-current="page"] { color: #fff; background: rgba(255,255,255,.16); }
-  .nav button [data-ikon] { width: 20px; height: 20px; }
-  .isi { padding-bottom: 48px; }
+  .nav { position: static; background: none; border: 0; padding: 0; display: flex; gap: 6px; }
+  .nav button { flex: none; flex-direction: row; gap: 8px; min-height: 40px; padding: 0 8px; font-size: .95rem; color: #BFE0D6; border-top: 0; border-bottom: 3px solid transparent; }
+  .nav button:hover { color: #fff; }
+  .nav button[aria-current="page"] { color: #fff; border-bottom-color: var(--teal-terang); }
+  .nav button [data-ikon] { width: 18px; height: 18px; }
+  .isi { padding-bottom: 56px; }
   .toast { bottom: 28px; }
-  .fitur { grid-template-columns: repeat(3, 1fr); }
-  .kartu { flex-direction: column; }
   .saring { grid-template-columns: 1fr 1fr auto; align-items: end; }
   .saring .tombol { margin-top: 0; }
 }
@@ -193,43 +222,68 @@ input:focus, select:focus { border-color: var(--teal); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
-
-/* ---------- kamera (Stage 2) ---------- */
-textarea { width: 100%; padding: 10px 14px; font: inherit; color: var(--teks); background: var(--putih); border: 1.5px solid var(--garis); border-radius: 10px; resize: vertical; }
-textarea:focus { border-color: var(--teal); }
-.kam-area { margin-top: 6px; max-width: 640px; }
-.kam-layar { position: relative; background: var(--hijau-tua); border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
-.kam-layar video, .kam-layar img { width: 100%; height: 100%; object-fit: contain; background: #000; }
-.kam-kosong { color: #CFE6DE; padding: 16px; text-align: center; }
-.aksi-kamera { display: flex; flex-wrap: wrap; gap: 10px; }
-.aksi-kamera .tombol { flex: 1 1 150px; }
-.foto-gambar { display: block; max-width: 100%; margin-top: 10px; border-radius: 10px; }
-.tombol.kecil { min-height: 36px; padding: 0 14px; margin-top: 8px; font-size: .9rem; }
-.lencana.aktif { background: var(--mint); color: var(--hijau); }
-</style>
+  </style>
 </head>
 <body>
   <div id="pemuat" class="pemuat">Memuat aplikasi…</div>
 
   <!-- ===================== LAYAR MASUK ===================== -->
   <main id="layar-masuk" class="masuk" hidden>
-    <section class="hero">
-      <svg class="riak" viewBox="0 0 400 260" aria-hidden="true" focusable="false">
-        <g fill="none" stroke="#1B9C8E" stroke-width="1.5">
-          <circle cx="300" cy="150" r="30" opacity=".9"/>
-          <circle cx="300" cy="150" r="62" opacity=".7"/>
-          <circle cx="300" cy="150" r="100" opacity=".5"/>
-          <circle cx="300" cy="150" r="146" opacity=".32"/>
-          <circle cx="300" cy="150" r="200" opacity=".18"/>
-        </g>
-        <path d="M268 150c9-14 27-18 42-6l12-9v30l-12-9c-15 12-33 8-42-6z" fill="#E6F2EE"/>
-        <circle cx="281" cy="147" r="2.2" fill="#0E3B2C"/>
+    <section class="bidang">
+      <h1>FISCHATCER VISION</h1>
+      <p id="tagline">Pengamatan pembenihan ikan lele dengan bantuan kamera</p>
+      <svg class="bak" viewBox="0 0 560 360" aria-hidden="true" focusable="false">
+      <rect x="10" y="10" width="540" height="316" rx="8" fill="#0E4A3D" stroke="#5FD0C8" stroke-opacity=".55" stroke-width="2"/>
+      <circle cx="164.8" cy="85.3" r="4.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="152.1" cy="66.0" r="5.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="161.0" cy="73.7" r="4.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="111.8" cy="75.4" r="5.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="75.9" cy="96.2" r="6.4" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="133.1" cy="97.3" r="4.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="128.6" cy="63.2" r="4.9" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="125.7" cy="68.5" r="5.3" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="323.0" cy="200.2" r="6.1" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="329.9" cy="219.9" r="5.8" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="351.0" cy="217.4" r="4.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="316.6" cy="192.8" r="5.9" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="357.0" cy="200.6" r="5.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="359.9" cy="199.6" r="6.1" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="386.9" cy="195.6" r="5.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="367.8" cy="241.0" r="6.0" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="341.7" cy="248.6" r="4.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="424.8" cy="74.5" r="6.4" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="448.0" cy="107.9" r="4.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="460.2" cy="98.6" r="6.1" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="440.6" cy="74.9" r="5.5" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="481.7" cy="59.7" r="4.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="434.3" cy="93.6" r="4.6" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="475.8" cy="72.7" r="5.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="471.3" cy="80.1" r="5.9" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="399.2" cy="137.4" r="5.8" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="278.3" cy="74.9" r="4.8" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="245.3" cy="178.6" r="5.4" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="523.2" cy="214.3" r="4.8" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="105.6" cy="207.8" r="4.0" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="189.3" cy="63.9" r="5.7" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="505.1" cy="206.8" r="5.5" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="258.3" cy="265.2" r="5.9" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="229.0" cy="136.4" r="5.0" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="230.2" cy="81.5" r="6.0" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="250.3" cy="59.7" r="5.2" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="81.2" cy="183.0" r="5.1" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="504.5" cy="195.7" r="4.1" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="347.2" cy="288.0" r="5.2" fill="#D8F1EA" fill-opacity=".9"/>
+      <circle cx="267.1" cy="61.1" r="5.0" fill="#D8F1EA" fill-opacity=".9"/>
+      <path d="M60 64V50H74M166 50H180V64M180 120V134H166M74 134H60V120" fill="none" stroke="#5FD0C8" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M300 182V168H314M416 168H430V182M430 246V260H416M314 260H300V246" fill="none" stroke="#5FD0C8" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M400 60V46H414M496 46H510V60M510 106V120H496M414 120H400V106" fill="none" stroke="#5FD0C8" stroke-width="2.5" stroke-linecap="round"/>
+      <g transform="translate(80 250) rotate(-12)"><path d="M0 0c6-9 18-12 28-4l8-5v18l-8-5c-10 8-22 5-28-4z" fill="#8FE0D6" fill-opacity=".85"/></g>
+      <g transform="translate(150 272) rotate(8)"><path d="M0 0c6-9 18-12 28-4l8-5v18l-8-5c-10 8-22 5-28-4z" fill="#8FE0D6" fill-opacity=".85"/></g>
+      <g transform="translate(215 240) rotate(-4)"><path d="M0 0c6-9 18-12 28-4l8-5v18l-8-5c-10 8-22 5-28-4z" fill="#8FE0D6" fill-opacity=".85"/></g>
+      <path d="M22 326v-12M32 326v-6M42 326v-6M52 326v-6M62 326v-6M72 326v-12M82 326v-6M92 326v-6M102 326v-6M112 326v-6M122 326v-12M132 326v-6M142 326v-6M152 326v-6M162 326v-6M172 326v-12M182 326v-6M192 326v-6M202 326v-6M212 326v-6M222 326v-12M232 326v-6M242 326v-6M252 326v-6M262 326v-6M272 326v-12M282 326v-6M292 326v-6M302 326v-6M312 326v-6M322 326v-12M332 326v-6M342 326v-6M352 326v-6M362 326v-6M372 326v-12M382 326v-6M392 326v-6M402 326v-6M412 326v-6M422 326v-12M432 326v-6M442 326v-6M452 326v-6M462 326v-6M472 326v-12M482 326v-6M492 326v-6M502 326v-6M512 326v-6M522 326v-12M532 326v-6M542 326v-6" stroke="#5FD0C8" stroke-opacity=".8" stroke-width="1.4" fill="none"/>
       </svg>
-      <div class="hero-teks">
-        <h1>FISCHATCER VISION</h1>
-        <p id="tagline">Pengamatan pembenihan ikan lele dengan bantuan kamera</p>
-      </div>
     </section>
+    <span class="skala" aria-hidden="true"></span>
 
     <section class="panel-masuk">
       <h2>Masuk</h2>
@@ -259,6 +313,7 @@ textarea:focus { border-color: var(--teal); }
           <button type="button" data-nav="profil"><span data-ikon="profil" aria-hidden="true"></span><span>Profil</span></button>
         </nav>
       </div>
+      <span class="skala" aria-hidden="true"></span>
     </header>
 
     <main class="isi">
@@ -266,16 +321,13 @@ textarea:focus { border-color: var(--teal); }
       <!-- BERANDA -->
       <section id="v-beranda" class="tampil">
         <h2 id="sapa">Halo</h2>
-        <p class="lembut">Pilih kegiatan pengamatan.</p>
+        <p id="tanggal-hari" class="tanggal"></p>
 
         <div id="daftar-fitur" class="fitur"></div>
 
-        <h3>Ringkasan kegiatan</h3>
-        <div id="ringkasan" class="ringkasan"></div>
-
-        <h3>Kegiatan terakhir</h3>
+        <h3>Catatan terakhir</h3>
         <ul id="terakhir" class="daftar"></ul>
-        <p id="kosong-terakhir" class="kosong" hidden>Belum ada kegiatan. Hasil pengamatan pertama akan muncul di sini.</p>
+        <p id="kosong-terakhir" class="kosong" hidden>Belum ada hasil pengamatan. Hasil hitung dan ukur akan tercatat di sini.</p>
       </section>
 
       <!-- KAMERA -->
@@ -285,11 +337,9 @@ textarea:focus { border-color: var(--teal); }
         <p id="kam-deskripsi" class="lembut"></p>
         <p class="status-fitur">Tahap ini hanya mengambil dan menyimpan foto. Hitungan dan ukuran otomatis belum aktif.</p>
 
-        <h3>Panduan foto sementara</h3>
-        <ul id="kam-tips" class="poin"></ul>
-
         <div class="kam-area">
-          <div class="kam-layar">
+          <div class="bidik">
+            <i class="sudut a"></i><i class="sudut b"></i><i class="sudut c"></i><i class="sudut d"></i>
             <video id="kam-video" playsinline muted autoplay hidden></video>
             <img id="kam-hasil" alt="Pratinjau foto" hidden>
             <div id="kam-kosong" class="kam-kosong">Kamera belum dibuka</div>
@@ -302,9 +352,9 @@ textarea:focus { border-color: var(--teal); }
             <button type="button" class="tombol sekunder" id="btn-galeri">Pilih dari galeri</button>
           </div>
 
-          <div class="aksi-kamera" id="aksi-live" hidden>
-            <button type="button" class="tombol" id="btn-ambil">Ambil foto</button>
+          <div class="aksi-live" id="aksi-live" hidden>
             <button type="button" class="tombol sekunder" id="btn-ganti" hidden>Ganti kamera</button>
+            <button type="button" class="rana" id="btn-ambil" aria-label="Ambil foto"></button>
             <button type="button" class="tombol sekunder" id="btn-tutup">Tutup kamera</button>
           </div>
 
@@ -319,6 +369,9 @@ textarea:focus { border-color: var(--teal); }
 
           <input id="in-galeri" type="file" accept="image/*" hidden>
         </div>
+
+        <h3>Panduan foto sementara</h3>
+        <ul id="kam-tips" class="poin"></ul>
 
         <h3>Foto tersimpan</h3>
         <ul id="daftar-foto" class="daftar"></ul>
@@ -374,13 +427,9 @@ textarea:focus { border-color: var(--teal); }
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
+<script src="config.js"></script>
 <script>
-// ================================================================
-// PENGATURAN: ganti teks di bawah dengan URL Web App Google Apps Script
-// (berakhiran /exec). Hanya baris ini yang perlu Anda ubah.
-// ================================================================
-var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBXEyG3RgqLtUO1smu8CEUsff3ydbXPEs1MmFCUb9BBnM/exec';
-// ================================================================
+// Alamat server (API_URL) dibaca dari file config.js yang dibuat sekali di GitHub.
 
 (function () {
   'use strict';
@@ -504,17 +553,29 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
     return parseInt(m[3], 10) + ' ' + BULAN[parseInt(m[2], 10) - 1] + ' ' + m[1] + ', ' + m[4] + '.' + m[5];
   }
 
+  function pecahWaktu(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(s || '');
+    if (!m) return { hari: '-', bulan: '', jam: '' };
+    return { hari: String(parseInt(m[3], 10)), bulan: BULAN[parseInt(m[2], 10) - 1] + ' ' + m[1], jam: m[4] + '.' + m[5] };
+  }
+
+  function kolomTanggal(s) {
+    var w = pecahWaktu(s);
+    return el('div', { class: 'tgl' }, [el('b', { text: w.hari }), el('span', { text: w.bulan }), el('span', { text: w.jam })]);
+  }
+
   function cariFitur(kode) {
     return FITUR.filter(function (x) { return x.kode === kode; })[0];
   }
 
   // Panggil API (Code.gs di Apps Script). Mengembalikan Promise.
   function api(aksi, data) {
-    if (!API_URL || API_URL.indexOf('GANTI_') === 0) {
-      return Promise.reject(new Error('Alamat server belum diisi. Ubah baris API_URL di bagian atas index.html.'));
+    var alamat = window.API_URL;
+    if (!alamat || typeof alamat !== 'string' || alamat.indexOf('https://') !== 0) {
+      return Promise.reject(new Error('Alamat server belum diisi. Buat file config.js di GitHub yang berisi alamat /exec Apps Script.'));
     }
     var badan = JSON.stringify(Object.assign({ aksi: aksi, token: token }, data || {}));
-    return fetch(API_URL, {
+    return fetch(alamat, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain agar tidak perlu preflight CORS
       body: badan
@@ -589,32 +650,23 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
   // ------------------------------------------------------------
   // BERANDA
   // ------------------------------------------------------------
-  function renderFitur() {
+  function renderFitur(foto) {
     var w = $('daftar-fitur');
     w.textContent = '';
     FITUR.forEach(function (f) {
       var ikon = el('span', { class: 'ikon-fitur', 'aria-hidden': 'true' });
       ikon.innerHTML = IKON[f.kode];
-      var teks = el('span', null, [
+      var kids = [ikon, el('span', { class: 'teks' }, [
         el('strong', { text: f.judul }),
-        el('span', { class: 'ket', text: f.deskripsi }),
-        el('span', { class: 'lencana aktif', text: 'Kamera aktif' })
-      ]);
+        el('span', { class: 'ket', text: f.deskripsi })
+      ])];
+      if (foto) {
+        kids.push(el('span', { class: 'jumlah' }, [el('b', { text: String(foto[f.kode] || 0) }), el('span', { text: 'foto' })]));
+      }
       w.appendChild(el('button', {
-        type: 'button', class: 'kartu',
+        type: 'button', class: 'baris-fitur',
         onclick: function () { tampil('kamera', f.kode); }
-      }, [ikon, teks]));
-    });
-  }
-
-  function renderRingkasan(r) {
-    var w = $('ringkasan');
-    w.textContent = '';
-    FITUR.forEach(function (f) {
-      w.appendChild(el('div', null, [
-        el('b', { text: String(r[f.kode] || 0) }),
-        el('span', { text: f.judul })
-      ]));
+      }, kids));
     });
   }
 
@@ -627,17 +679,14 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
 
   function renderBaris(a) {
     var label = STATUS_VALIDASI[a.status_validasi] || a.status_validasi || 'Belum divalidasi';
-    var kids = [
-      el('div', { class: 'atas' }, [
-        el('span', { class: 'judul', text: a.jenis_label }),
-        el('span', { class: 'waktu', text: formatWaktu(a.waktu) })
-      ]),
+    var isi = [
+      el('div', { class: 'judul', text: a.jenis_label }),
       el('div', { class: 'hasil', text: hasilTeks(a) })
     ];
-    if (a.confidence) kids.push(el('p', { class: 'catatan-baris', text: 'Tingkat keyakinan: ' + a.confidence }));
-    if (a.catatan) kids.push(el('p', { class: 'catatan-baris', text: a.catatan }));
-    kids.push(el('span', { class: 'chip' + (a.status_validasi === 'uji-coba' ? ' uji' : ''), text: label }));
-    return el('li', null, kids);
+    if (a.confidence) isi.push(el('p', { class: 'catatan-baris', text: 'Tingkat keyakinan: ' + a.confidence }));
+    if (a.catatan) isi.push(el('p', { class: 'catatan-baris', text: a.catatan }));
+    isi.push(el('span', { class: 'chip' + (a.status_validasi === 'uji-coba' ? ' uji' : ''), text: label }));
+    return el('li', null, [kolomTanggal(a.waktu), el('div', { class: 'rincian' }, isi)]);
   }
 
   function isiDaftar(ulId, kosongId, data) {
@@ -649,9 +698,12 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
 
   function muatBeranda() {
     $('sapa').textContent = 'Halo, ' + profil.nama;
-    renderFitur();
+    $('tanggal-hari').textContent = new Date().toLocaleDateString('id-ID', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    renderFitur(null);
     api('dashboard').then(function (d) {
-      renderRingkasan(d.ringkasan);
+      renderFitur(d.foto || null);
       isiDaftar('terakhir', 'kosong-terakhir', d.terakhir);
     }).catch(function (e) {
       if (!e.sudahDitangani) toast(e.message);
@@ -929,16 +981,13 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
     $('kosong-foto').hidden = true;
     api('daftarFoto', { jenis: jenisAktif }).then(function (d) {
       d.data.forEach(function (u) {
-        var ket = u.ukuran_kb + ' KB, dari ' + u.sumber;
-        var kids = [
-          el('div', { class: 'atas' }, [
-            el('span', { class: 'judul', text: u.nama_file }),
-            el('span', { class: 'waktu', text: formatWaktu(u.waktu) })
-          ]),
-          el('p', { class: 'catatan-baris', text: ket })
+        var isi = [
+          el('div', { class: 'judul', text: u.nama_file }),
+          el('p', { class: 'catatan-baris', text: u.ukuran_kb + ' KB, dari ' + u.sumber })
         ];
-        if (u.catatan) kids.push(el('p', { class: 'catatan-baris', text: u.catatan }));
-        var li = el('li', null, kids);
+        if (u.catatan) isi.push(el('p', { class: 'catatan-baris', text: u.catatan }));
+        var rincian = el('div', { class: 'rincian' }, isi);
+        var li = el('li', null, [kolomTanggal(u.waktu), rincian]);
         var tombol = el('button', { type: 'button', class: 'tombol sekunder kecil', text: 'Lihat foto' });
         var gambar = null;
         tombol.addEventListener('click', function () {
@@ -947,14 +996,14 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbz0ThbHaJIAb-1nJ8obbbytBX
           tombol.textContent = 'Memuat…';
           api('ambilFoto', { upload_id: u.upload_id }).then(function (r) {
             gambar = el('img', { class: 'foto-gambar', alt: 'Foto ' + u.nama_file, src: r.data_url });
-            li.appendChild(gambar);
+            rincian.appendChild(gambar);
             tombol.textContent = 'Sembunyikan foto';
           }).catch(function (e) {
             tombol.textContent = 'Lihat foto';
             if (!e.sudahDitangani) toast(e.message);
           }).then(function () { tombol.disabled = false; });
         });
-        li.appendChild(tombol);
+        rincian.appendChild(tombol);
         ul.appendChild(li);
       });
       $('kosong-foto').hidden = d.data.length > 0;
