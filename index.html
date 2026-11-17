@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0E3B2C">
+  <title>FISCHATCER VISION</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231B9C8E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12c3-5 9-6 14-2l4-3v10l-4-3c-5 4-11 3-14-2z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hijau-tua: #0E3B2C;
+  --hijau: #175A44;
+  --teal: #1B9C8E;
+  --teal-tua: #10695F;
+  --mint: #E6F2EE;
+  --latar: #F4F9F7;
+  --putih: #FFFFFF;
+  --teks: #14261F;
+  --lembut: #4B6159;
+  --garis: #D2E1DB;
+  --bahaya: #A63A2B;
+  --amber: #7A4F00;
+  --amber-muda: #FBF1DC;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--teks);
+  background: var(--latar);
+}
+[hidden] { display: none !important; }
+h1, h2, h3 { line-height: 1.2; margin: 0; }
+h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+h3 { font-size: 1.05rem; font-weight: 700; margin: 28px 0 10px; }
+p { margin: 0 0 12px; max-width: 62ch; }
+.lembut { color: var(--lembut); }
+
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+/* ---------- pemuat & toast ---------- */
+.pemuat { padding: 40vh 20px 0; text-align: center; color: var(--lembut); }
+.toast {
+  position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%);
+  max-width: min(92vw, 420px); padding: 12px 18px; border-radius: 10px;
+  background: var(--hijau-tua); color: #fff; font-weight: 600; z-index: 50;
+}
+
+/* ---------- form ---------- */
+label { display: block; font-weight: 600; margin: 14px 0 6px; }
+input, select {
+  width: 100%; min-height: 46px; padding: 0 14px;
+  font: inherit; color: var(--teks); background: var(--putih);
+  border: 1.5px solid var(--garis); border-radius: 10px;
+}
+input[readonly] { background: var(--mint); color: var(--lembut); }
+input:focus, select:focus { border-color: var(--teal); }
+.galat { margin: 12px 0 0; color: var(--bahaya); font-weight: 600; }
+.catatan { margin-top: 18px; font-size: .9rem; color: var(--lembut); }
+
+.tombol {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; padding: 0 22px; margin-top: 18px;
+  font: inherit; font-weight: 700; color: #fff; background: var(--teal-tua);
+  border: 0; border-radius: 10px; cursor: pointer;
+}
+.tombol:hover { background: var(--hijau); }
+.tombol[disabled] { opacity: .6; cursor: progress; }
+.tombol.sekunder { background: var(--putih); color: var(--hijau-tua); border: 1.5px solid var(--garis); }
+.tombol.sekunder:hover { background: var(--mint); }
+.masuk .tombol { width: 100%; }
+.tautan {
+  background: none; border: 0; padding: 8px 0; margin-bottom: 8px;
+  font: inherit; font-weight: 600; color: var(--teal-tua); cursor: pointer; text-decoration: underline;
+}
+
+/* ---------- layar masuk ---------- */
+.masuk { min-height: 100vh; display: flex; flex-direction: column; background: var(--putih); }
+.hero {
+  position: relative; overflow: hidden; background: var(--hijau-tua); color: #fff;
+  padding: 44px 24px 36px; min-height: 220px;
+}
+.riak { position: absolute; right: -40px; top: -20px; width: 420px; max-width: none; height: auto; }
+.hero-teks { position: relative; max-width: 460px; }
+.hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: .01em; }
+.hero p { margin-top: 10px; color: #CFE6DE; }
+.panel-masuk { padding: 28px 24px 40px; width: 100%; max-width: 440px; margin: 0 auto; }
+.panel-masuk h2 { margin-bottom: 4px; }
+
+/* ---------- bar & navigasi ---------- */
+.bar { background: var(--hijau-tua); color: #fff; }
+.bar-isi {
+  max-width: 980px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.merek { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .01em; }
+.logo { display: inline-flex; width: 30px; height: 30px; color: #7ED6C9; }
+.logo svg, .nav svg, .ikon-fitur svg { width: 100%; height: 100%; }
+
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; background: var(--putih); border-top: 1px solid var(--garis);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav button {
+  flex: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font: inherit; font-size: .8rem; font-weight: 600; color: var(--lembut);
+  background: none; border: 0; cursor: pointer;
+}
+.nav button [data-ikon] { width: 24px; height: 24px; display: inline-flex; }
+.nav button[aria-current="page"] { color: var(--teal-tua); font-weight: 800; }
+
+/* ---------- isi ---------- */
+.isi { max-width: 980px; margin: 0 auto; padding: 24px 20px 110px; }
+
+.fitur { display: grid; gap: 12px; margin-top: 18px; }
+.kartu {
+  display: flex; gap: 14px; align-items: flex-start; width: 100%;
+  padding: 16px; text-align: left; font: inherit; color: inherit;
+  background: var(--putih); border: 1.5px solid var(--garis); border-radius: 14px; cursor: pointer;
+}
+.kartu:hover { border-color: var(--teal); }
+.ikon-fitur {
+  flex: none; width: 48px; height: 48px; padding: 11px; border-radius: 50%;
+  background: var(--mint); color: var(--teal-tua);
+}
+.kartu strong { display: block; font-size: 1.05rem; }
+.kartu span.ket { display: block; color: var(--lembut); font-size: .92rem; margin-top: 2px; }
+.lencana {
+  display: inline-block; margin-top: 8px; padding: 2px 10px; border-radius: 99px;
+  font-size: .78rem; font-weight: 700; background: var(--amber-muda); color: var(--amber);
+}
+
+.ringkasan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ringkasan div { padding: 12px 14px; background: var(--putih); border: 1.5px solid var(--garis); border-radius: 12px; }
+.ringkasan b { display: block; font-size: 1.6rem; font-weight: 800; color: var(--hijau); line-height: 1.1; }
+.ringkasan span { font-size: .82rem; color: var(--lembut); }
+
+.daftar { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.daftar li { padding: 14px 16px; background: var(--putih); border: 1.5px solid var(--garis); border-radius: 12px; }
+.daftar .atas { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.daftar .judul { font-weight: 700; }
+.daftar .waktu { color: var(--lembut); font-size: .88rem; }
+.daftar .hasil { margin-top: 4px; font-size: 1.1rem; font-weight: 800; color: var(--hijau); }
+.daftar .catatan-baris { margin: 6px 0 0; font-size: .9rem; color: var(--lembut); }
+.chip {
+  display: inline-block; margin-top: 8px; padding: 2px 10px; border-radius: 99px;
+  font-size: .78rem; font-weight: 700; background: var(--mint); color: var(--hijau);
+}
+.chip.uji { background: var(--amber-muda); color: var(--amber); }
+.kosong { padding: 22px 16px; text-align: center; color: var(--lembut); background: var(--putih); border: 1.5px dashed var(--garis); border-radius: 12px; max-width: none; }
+
+.status-fitur { padding: 12px 14px; background: var(--amber-muda); color: var(--amber); border-radius: 10px; font-weight: 600; }
+.poin { margin: 0; padding-left: 20px; }
+.poin li { margin-bottom: 6px; }
+
+.saring { display: grid; gap: 4px 12px; margin: 14px 0; }
+.saring .tombol { margin-top: 10px; }
+
+.meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 22px 0 0; font-size: .92rem; }
+.meta dt { color: var(--lembut); }
+.meta dd { margin: 0; font-weight: 600; }
+.versi { margin-top: 28px; font-size: .82rem; color: var(--lembut); }
+#v-profil form { max-width: 440px; }
+
+/* ---------- layar lebar ---------- */
+@media (min-width: 760px) {
+  .masuk { flex-direction: row; }
+  .hero { flex: 1.1; display: flex; align-items: flex-end; padding: 56px 48px; min-height: 100vh; }
+  .riak { right: -60px; top: 6%; width: 640px; }
+  .hero h1 { font-size: 2.6rem; }
+  .panel-masuk { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 520px; padding: 40px 48px; margin: 0; }
+
+  .nav { position: static; background: none; border: 0; padding: 0; display: flex; gap: 4px; }
+  .nav button { flex: none; flex-direction: row; gap: 8px; min-height: 40px; padding: 0 14px; font-size: .95rem; color: #CFE6DE; border-radius: 8px; }
+  .nav button:hover { background: rgba(255,255,255,.1); }
+  .nav button[aria-current="page"] { color: #fff; background: rgba(255,255,255,.16); }
+  .nav button [data-ikon] { width: 20px; height: 20px; }
+  .isi { padding-bottom: 48px; }
+  .toast { bottom: 28px; }
+  .fitur { grid-template-columns: repeat(3, 1fr); }
+  .kartu { flex-direction: column; }
+  .saring { grid-template-columns: 1fr 1fr auto; align-items: end; }
+  .saring .tombol { margin-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- kamera (Stage 2) ---------- */
+textarea { width: 100%; padding: 10px 14px; font: inherit; color: var(--teks); background: var(--putih); border: 1.5px solid var(--garis); border-radius: 10px; resize: vertical; }
+textarea:focus { border-color: var(--teal); }
+.kam-area { margin-top: 6px; max-width: 640px; }
+.kam-layar { position: relative; background: var(--hijau-tua); border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+.kam-layar video, .kam-layar img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.kam-kosong { color: #CFE6DE; padding: 16px; text-align: center; }
+.aksi-kamera { display: flex; flex-wrap: wrap; gap: 10px; }
+.aksi-kamera .tombol { flex: 1 1 150px; }
+.foto-gambar { display: block; max-width: 100%; margin-top: 10px; border-radius: 10px; }
+.tombol.kecil { min-height: 36px; padding: 0 14px; margin-top: 8px; font-size: .9rem; }
+.lencana.aktif { background: var(--mint); color: var(--hijau); }
+</style>
+</head>
+<body>
+  <div id="pemuat" class="pemuat">Memuat aplikasi…</div>
+
+  <!-- ===================== LAYAR MASUK ===================== -->
+  <main id="layar-masuk" class="masuk" hidden>
+    <section class="hero">
+      <svg class="riak" viewBox="0 0 400 260" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="#1B9C8E" stroke-width="1.5">
+          <circle cx="300" cy="150" r="30" opacity=".9"/>
+          <circle cx="300" cy="150" r="62" opacity=".7"/>
+          <circle cx="300" cy="150" r="100" opacity=".5"/>
+          <circle cx="300" cy="150" r="146" opacity=".32"/>
+          <circle cx="300" cy="150" r="200" opacity=".18"/>
+        </g>
+        <path d="M268 150c9-14 27-18 42-6l12-9v30l-12-9c-15 12-33 8-42-6z" fill="#E6F2EE"/>
+        <circle cx="281" cy="147" r="2.2" fill="#0E3B2C"/>
+      </svg>
+      <div class="hero-teks">
+        <h1>FISCHATCER VISION</h1>
+        <p id="tagline">Pengamatan pembenihan ikan lele dengan bantuan kamera</p>
+      </div>
+    </section>
+
+    <section class="panel-masuk">
+      <h2>Masuk</h2>
+      <form id="form-masuk" novalidate>
+        <label for="in-nama">Nama</label>
+        <input id="in-nama" name="nama" type="text" autocomplete="name" maxlength="60" required>
+        <label for="in-email">Email</label>
+        <input id="in-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="100" required>
+        <p id="galat-masuk" class="galat" role="alert" hidden></p>
+        <button id="btn-masuk" class="tombol" type="submit">Masuk</button>
+      </form>
+      <p class="catatan">Masuk memakai nama dan email saja, tanpa kata sandi. Jangan menyimpan data rahasia di aplikasi ini.</p>
+    </section>
+  </main>
+
+  <!-- ===================== LAYAR APLIKASI ===================== -->
+  <div id="layar-app" hidden>
+    <header class="bar">
+      <div class="bar-isi">
+        <div class="merek">
+          <span class="logo" data-ikon="ikan" aria-hidden="true"></span>
+          <span class="nama-app">FISCHATCER VISION</span>
+        </div>
+        <nav class="nav" aria-label="Menu utama">
+          <button type="button" data-nav="beranda"><span data-ikon="beranda" aria-hidden="true"></span><span>Beranda</span></button>
+          <button type="button" data-nav="riwayat"><span data-ikon="riwayat" aria-hidden="true"></span><span>Riwayat</span></button>
+          <button type="button" data-nav="profil"><span data-ikon="profil" aria-hidden="true"></span><span>Profil</span></button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="isi">
+
+      <!-- BERANDA -->
+      <section id="v-beranda" class="tampil">
+        <h2 id="sapa">Halo</h2>
+        <p class="lembut">Pilih kegiatan pengamatan.</p>
+
+        <div id="daftar-fitur" class="fitur"></div>
+
+        <h3>Ringkasan kegiatan</h3>
+        <div id="ringkasan" class="ringkasan"></div>
+
+        <h3>Kegiatan terakhir</h3>
+        <ul id="terakhir" class="daftar"></ul>
+        <p id="kosong-terakhir" class="kosong" hidden>Belum ada kegiatan. Hasil pengamatan pertama akan muncul di sini.</p>
+      </section>
+
+      <!-- KAMERA -->
+      <section id="v-kamera" class="tampil" hidden>
+        <button type="button" class="tautan" id="btn-kembali">Kembali ke Beranda</button>
+        <h2 id="kam-judul"></h2>
+        <p id="kam-deskripsi" class="lembut"></p>
+        <p class="status-fitur">Tahap ini hanya mengambil dan menyimpan foto. Hitungan dan ukuran otomatis belum aktif.</p>
+
+        <h3>Panduan foto sementara</h3>
+        <ul id="kam-tips" class="poin"></ul>
+
+        <div class="kam-area">
+          <div class="kam-layar">
+            <video id="kam-video" playsinline muted autoplay hidden></video>
+            <img id="kam-hasil" alt="Pratinjau foto" hidden>
+            <div id="kam-kosong" class="kam-kosong">Kamera belum dibuka</div>
+          </div>
+          <p id="kam-galat" class="galat" role="alert" hidden></p>
+          <p id="kam-info" class="lembut" hidden></p>
+
+          <div class="aksi-kamera" id="aksi-awal">
+            <button type="button" class="tombol" id="btn-buka">Buka kamera</button>
+            <button type="button" class="tombol sekunder" id="btn-galeri">Pilih dari galeri</button>
+          </div>
+
+          <div class="aksi-kamera" id="aksi-live" hidden>
+            <button type="button" class="tombol" id="btn-ambil">Ambil foto</button>
+            <button type="button" class="tombol sekunder" id="btn-ganti" hidden>Ganti kamera</button>
+            <button type="button" class="tombol sekunder" id="btn-tutup">Tutup kamera</button>
+          </div>
+
+          <div id="aksi-kirim" hidden>
+            <label for="kam-catatan">Catatan (boleh dikosongkan)</label>
+            <textarea id="kam-catatan" maxlength="200" rows="2"></textarea>
+            <div class="aksi-kamera">
+              <button type="button" class="tombol" id="btn-kirim">Simpan foto</button>
+              <button type="button" class="tombol sekunder" id="btn-ulang">Ulangi</button>
+            </div>
+          </div>
+
+          <input id="in-galeri" type="file" accept="image/*" hidden>
+        </div>
+
+        <h3>Foto tersimpan</h3>
+        <ul id="daftar-foto" class="daftar"></ul>
+        <p id="kosong-foto" class="kosong" hidden>Belum ada foto untuk kegiatan ini.</p>
+      </section>
+
+      <!-- RIWAYAT -->
+      <section id="v-riwayat" class="tampil" hidden>
+        <h2>Riwayat</h2>
+        <div class="saring">
+          <div>
+            <label for="f-jenis">Jenis kegiatan</label>
+            <select id="f-jenis">
+              <option value="">Semua kegiatan</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-tanggal">Tanggal</label>
+            <input id="f-tanggal" type="date">
+          </div>
+          <button type="button" class="tombol sekunder" id="btn-reset">Atur ulang</button>
+        </div>
+        <p id="jumlah-riwayat" class="lembut"></p>
+        <ul id="daftar-riwayat" class="daftar"></ul>
+        <p id="kosong-riwayat" class="kosong" hidden>Tidak ada kegiatan yang cocok.</p>
+      </section>
+
+      <!-- PROFIL -->
+      <section id="v-profil" class="tampil" hidden>
+        <h2>Profil</h2>
+        <form id="form-profil" novalidate>
+          <label for="p-nama">Nama</label>
+          <input id="p-nama" type="text" maxlength="60" autocomplete="name">
+          <label for="p-email">Email</label>
+          <input id="p-email" type="email" readonly>
+          <label for="p-peran">Peran</label>
+          <select id="p-peran"></select>
+          <label for="p-instansi">Sekolah atau instansi</label>
+          <input id="p-instansi" type="text" maxlength="80" autocomplete="organization">
+          <p id="galat-profil" class="galat" role="alert" hidden></p>
+          <button id="btn-simpan-profil" class="tombol" type="submit">Simpan profil</button>
+        </form>
+        <dl class="meta">
+          <dt>Terdaftar</dt><dd id="p-dibuat">-</dd>
+          <dt>Masuk terakhir</dt><dd id="p-login">-</dd>
+        </dl>
+        <button type="button" class="tombol sekunder" id="btn-keluar">Keluar</button>
+        <p class="versi" id="versi"></p>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+// ================================================================
+// PENGATURAN: ganti teks di bawah dengan URL Web App Google Apps Script
+// (berakhiran /exec). Hanya baris ini yang perlu Anda ubah.
+// ================================================================
+var API_URL = 'GANTI_DENGAN_URL_WEB_APP';
+// ================================================================
+
+(function () {
+  'use strict';
+
+  // ------------------------------------------------------------
+  // DATA TETAP
+  // ------------------------------------------------------------
+  var KUNCI = 'fv_token';
+  var MAKS_SISI = 1600;       // sisi terpanjang foto setelah dikompres (piksel)
+  var MAKS_BYTE = 1500000;    // target ukuran foto setelah dikompres (sekitar 1,5 MB)
+  var memori = {};
+
+  var IKON = {
+    egg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="3.5"/><circle cx="16" cy="9" r="3.5"/><circle cx="12" cy="16" r="3.5"/></svg>',
+    larva_fry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c3-5 9-6 14-2l4-3v10l-4-3c-5 4-11 3-14-2z"/><circle cx="8" cy="11.5" r=".9" fill="currentColor"/></svg>',
+    fry_measure: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>',
+    ikan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c3-5 9-6 14-2l4-3v10l-4-3c-5 4-11 3-14-2z"/><circle cx="8" cy="11.5" r=".9" fill="currentColor"/></svg>',
+    beranda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/></svg>',
+    riwayat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    profil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'
+  };
+
+  var FITUR = [
+    {
+      kode: 'egg', judul: 'Hitung Telur',
+      deskripsi: 'Foto telur ikan untuk dihitung dan disimpan hasilnya.',
+      tips: ['Pastikan cahaya merata dan hindari pantulan di air atau wadah.',
+             'Pakai latar polos yang kontras dengan telur.',
+             'Arahkan kamera lurus dari atas wadah, jangan miring.',
+             'Pastikan gambar fokus sebelum foto diambil.']
+    },
+    {
+      kode: 'larva_fry', judul: 'Hitung Larva & Benih',
+      deskripsi: 'Foto larva atau benih untuk dihitung dan disimpan hasilnya.',
+      tips: ['Pastikan cahaya merata dan hindari pantulan di air atau wadah.',
+             'Pakai latar polos yang kontras dengan objek.',
+             'Usahakan larva atau benih tidak menumpuk.',
+             'Arahkan kamera lurus dari atas wadah, jangan miring.']
+    },
+    {
+      kode: 'fry_measure', judul: 'Ukur Benih',
+      deskripsi: 'Foto benih untuk diukur panjangnya.',
+      tips: ['Letakkan benda acuan berukuran diketahui (misalnya penggaris) di foto, sejajar dengan benih.',
+             'Arahkan kamera lurus dari atas, bukan dari samping.',
+             'Sebar benih agar tidak saling menutupi.',
+             'Pakai latar polos dan cahaya merata tanpa pantulan.']
+    }
+  ];
+
+  var STATUS_VALIDASI = {
+    'uji-coba': 'Data uji',
+    'belum-divalidasi': 'Belum divalidasi',
+    'tervalidasi': 'Sudah divalidasi'
+  };
+  var BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+  var token = null;
+  var profil = null;
+  var info = null;
+  var toastTimer = null;
+
+  // status kamera
+  var jenisAktif = null;
+  var stream = null;
+  var facing = 'environment';
+  var foto = null;          // { blob, lebar, tinggi, sumber, url }
+  var sedangKirim = false;
+
+  // ------------------------------------------------------------
+  // BANTUAN UMUM
+  // ------------------------------------------------------------
+  function $(id) { return document.getElementById(id); }
+
+  function el(tag, props, kids) {
+    var e = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        if (k === 'class') e.className = props[k];
+        else if (k === 'text') e.textContent = props[k];
+        else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), props[k]);
+        else e.setAttribute(k, props[k]);
+      });
+    }
+    (kids || []).forEach(function (c) {
+      if (c === null || c === undefined) return;
+      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return e;
+  }
+
+  var simpan = {
+    ambil: function () {
+      try { return window.localStorage.getItem(KUNCI); } catch (e) { return memori.t || null; }
+    },
+    taruh: function (v) {
+      memori.t = v;
+      try { window.localStorage.setItem(KUNCI, v); } catch (e) { /* abaikan */ }
+    },
+    hapus: function () {
+      delete memori.t;
+      try { window.localStorage.removeItem(KUNCI); } catch (e) { /* abaikan */ }
+    }
+  };
+
+  function toast(pesan) {
+    var t = $('toast');
+    t.textContent = pesan;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3800);
+  }
+
+  function tampilGalat(id, pesan) {
+    var p = $(id);
+    if (pesan) { p.textContent = pesan; p.hidden = false; } else { p.hidden = true; }
+  }
+
+  function formatWaktu(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(s || '');
+    if (!m) return s || '-';
+    return parseInt(m[3], 10) + ' ' + BULAN[parseInt(m[2], 10) - 1] + ' ' + m[1] + ', ' + m[4] + '.' + m[5];
+  }
+
+  function cariFitur(kode) {
+    return FITUR.filter(function (x) { return x.kode === kode; })[0];
+  }
+
+  // Panggil API (Code.gs di Apps Script). Mengembalikan Promise.
+  function api(aksi, data) {
+    if (!API_URL || API_URL.indexOf('GANTI_') === 0) {
+      return Promise.reject(new Error('Alamat server belum diisi. Ubah baris API_URL di bagian atas index.html.'));
+    }
+    var badan = JSON.stringify(Object.assign({ aksi: aksi, token: token }, data || {}));
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain agar tidak perlu preflight CORS
+      body: badan
+    }).then(function (res) {
+      return res.json();
+    }, function () {
+      throw new Error('Tidak dapat terhubung ke server. Periksa internet lalu coba lagi.');
+    }).then(function (hasil) {
+      if (hasil && hasil.ok === false) {
+        var err = new Error(hasil.pesan || 'Terjadi kesalahan.');
+        if (hasil.sesiHabis) { err.sudahDitangani = true; sesiBerakhir(hasil.pesan); }
+        throw err;
+      }
+      return hasil;
+    }, function (e) {
+      if (e instanceof Error && e.message.indexOf('Tidak dapat terhubung') === 0) throw e;
+      throw new Error('Jawaban server tidak terbaca. Pastikan deployment Apps Script memakai akses "Siapa saja".');
+    });
+  }
+
+  // ------------------------------------------------------------
+  // LAYAR & NAVIGASI
+  // ------------------------------------------------------------
+  function isiIkon() {
+    var daftar = document.querySelectorAll('[data-ikon]');
+    for (var i = 0; i < daftar.length; i++) {
+      daftar[i].innerHTML = IKON[daftar[i].getAttribute('data-ikon')] || '';
+    }
+  }
+
+  function tampilLayar(nama) {
+    $('pemuat').hidden = true;
+    $('layar-masuk').hidden = nama !== 'masuk';
+    $('layar-app').hidden = nama !== 'app';
+    window.scrollTo(0, 0);
+  }
+
+  function tampil(nama, kode) {
+    if (nama !== 'kamera') { tutupStream(); }
+    ['beranda', 'kamera', 'riwayat', 'profil'].forEach(function (v) {
+      $('v-' + v).hidden = v !== nama;
+    });
+    var aktif = nama === 'kamera' ? 'beranda' : nama;
+    var tombol = document.querySelectorAll('.nav button');
+    for (var i = 0; i < tombol.length; i++) {
+      if (tombol[i].getAttribute('data-nav') === aktif) tombol[i].setAttribute('aria-current', 'page');
+      else tombol[i].removeAttribute('aria-current');
+    }
+    window.scrollTo(0, 0);
+
+    if (nama === 'beranda') muatBeranda();
+    else if (nama === 'riwayat') muatRiwayat();
+    else if (nama === 'profil') isiProfil();
+    else if (nama === 'kamera') siapkanKamera(kode);
+  }
+
+  function masukApp(p) {
+    profil = p;
+    tampilLayar('app');
+    tampil('beranda');
+  }
+
+  function sesiBerakhir(pesan) {
+    tutupStream();
+    simpan.hapus();
+    token = null;
+    profil = null;
+    tampilLayar('masuk');
+    if (pesan) toast(pesan);
+  }
+
+  // ------------------------------------------------------------
+  // BERANDA
+  // ------------------------------------------------------------
+  function renderFitur() {
+    var w = $('daftar-fitur');
+    w.textContent = '';
+    FITUR.forEach(function (f) {
+      var ikon = el('span', { class: 'ikon-fitur', 'aria-hidden': 'true' });
+      ikon.innerHTML = IKON[f.kode];
+      var teks = el('span', null, [
+        el('strong', { text: f.judul }),
+        el('span', { class: 'ket', text: f.deskripsi }),
+        el('span', { class: 'lencana aktif', text: 'Kamera aktif' })
+      ]);
+      w.appendChild(el('button', {
+        type: 'button', class: 'kartu',
+        onclick: function () { tampil('kamera', f.kode); }
+      }, [ikon, teks]));
+    });
+  }
+
+  function renderRingkasan(r) {
+    var w = $('ringkasan');
+    w.textContent = '';
+    FITUR.forEach(function (f) {
+      w.appendChild(el('div', null, [
+        el('b', { text: String(r[f.kode] || 0) }),
+        el('span', { text: f.judul })
+      ]));
+    });
+  }
+
+  function hasilTeks(a) {
+    if (a.jenis === 'fry_measure') {
+      return a.panjang_mm ? a.panjang_mm + ' mm' : 'Belum ada hasil';
+    }
+    return a.jumlah ? a.jumlah + ' terdeteksi' : 'Belum ada hasil';
+  }
+
+  function renderBaris(a) {
+    var label = STATUS_VALIDASI[a.status_validasi] || a.status_validasi || 'Belum divalidasi';
+    var kids = [
+      el('div', { class: 'atas' }, [
+        el('span', { class: 'judul', text: a.jenis_label }),
+        el('span', { class: 'waktu', text: formatWaktu(a.waktu) })
+      ]),
+      el('div', { class: 'hasil', text: hasilTeks(a) })
+    ];
+    if (a.confidence) kids.push(el('p', { class: 'catatan-baris', text: 'Tingkat keyakinan: ' + a.confidence }));
+    if (a.catatan) kids.push(el('p', { class: 'catatan-baris', text: a.catatan }));
+    kids.push(el('span', { class: 'chip' + (a.status_validasi === 'uji-coba' ? ' uji' : ''), text: label }));
+    return el('li', null, kids);
+  }
+
+  function isiDaftar(ulId, kosongId, data) {
+    var ul = $(ulId);
+    ul.textContent = '';
+    data.forEach(function (a) { ul.appendChild(renderBaris(a)); });
+    $(kosongId).hidden = data.length > 0;
+  }
+
+  function muatBeranda() {
+    $('sapa').textContent = 'Halo, ' + profil.nama;
+    renderFitur();
+    api('dashboard').then(function (d) {
+      renderRingkasan(d.ringkasan);
+      isiDaftar('terakhir', 'kosong-terakhir', d.terakhir);
+    }).catch(function (e) {
+      if (!e.sudahDitangani) toast(e.message);
+    });
+  }
+
+  // ------------------------------------------------------------
+  // RIWAYAT
+  // ------------------------------------------------------------
+  function muatRiwayat() {
+    var jenis = $('f-jenis').value;
+    var tanggal = $('f-tanggal').value;
+    $('jumlah-riwayat').textContent = 'Memuat…';
+    api('riwayat', { jenis: jenis, tanggal: tanggal }).then(function (d) {
+      $('jumlah-riwayat').textContent = d.total + ' kegiatan';
+      isiDaftar('daftar-riwayat', 'kosong-riwayat', d.data);
+    }).catch(function (e) {
+      $('jumlah-riwayat').textContent = '';
+      if (!e.sudahDitangani) toast(e.message);
+    });
+  }
+
+  function siapkanFilter() {
+    var s = $('f-jenis');
+    FITUR.forEach(function (f) {
+      s.appendChild(el('option', { value: f.kode, text: f.judul }));
+    });
+    s.addEventListener('change', muatRiwayat);
+    $('f-tanggal').addEventListener('change', muatRiwayat);
+    $('btn-reset').addEventListener('click', function () {
+      $('f-jenis').value = '';
+      $('f-tanggal').value = '';
+      muatRiwayat();
+    });
+  }
+
+  // ------------------------------------------------------------
+  // PROFIL
+  // ------------------------------------------------------------
+  function isiProfil() {
+    var sel = $('p-peran');
+    if (!sel.options.length && info) {
+      info.peran.forEach(function (p) { sel.appendChild(el('option', { value: p, text: p })); });
+    }
+    $('p-nama').value = profil.nama;
+    $('p-email').value = profil.email;
+    sel.value = profil.peran;
+    $('p-instansi').value = profil.instansi || '';
+    $('p-dibuat').textContent = formatWaktu(profil.dibuat_pada);
+    $('p-login').textContent = formatWaktu(profil.login_terakhir);
+    tampilGalat('galat-profil', '');
+  }
+
+  // ------------------------------------------------------------
+  // KAMERA
+  // ------------------------------------------------------------
+  function galatKamera(pesan) { tampilGalat('kam-galat', pesan); }
+
+  function modeKamera(mode) {
+    // mode: 'awal' | 'live' | 'hasil'
+    $('aksi-awal').hidden = mode !== 'awal';
+    $('aksi-live').hidden = mode !== 'live';
+    $('aksi-kirim').hidden = mode !== 'hasil';
+    $('kam-video').hidden = mode !== 'live';
+    $('kam-hasil').hidden = mode !== 'hasil';
+    $('kam-kosong').hidden = mode !== 'awal';
+  }
+
+  function siapkanKamera(kode) {
+    var f = cariFitur(kode);
+    if (!f) return;
+    jenisAktif = kode;
+    $('kam-judul').textContent = f.judul;
+    $('kam-deskripsi').textContent = f.deskripsi;
+    var ul = $('kam-tips');
+    ul.textContent = '';
+    f.tips.forEach(function (t) { ul.appendChild(el('li', { text: t })); });
+    buangFoto();
+    galatKamera('');
+    $('kam-info').hidden = true;
+    $('kam-catatan').value = '';
+    modeKamera('awal');
+    muatFoto();
+  }
+
+  function tutupStream() {
+    if (stream) {
+      stream.getTracks().forEach(function (t) { t.stop(); });
+      stream = null;
+    }
+    var v = $('kam-video');
+    if (v) v.srcObject = null;
+  }
+
+  function buangFoto() {
+    if (foto && foto.url) URL.revokeObjectURL(foto.url);
+    foto = null;
+  }
+
+  function pesanKamera(e) {
+    var n = e && e.name;
+    if (n === 'NotAllowedError' || n === 'PermissionDeniedError' || n === 'SecurityError') {
+      return 'Izin kamera ditolak. Klik ikon gembok di kolom alamat, izinkan Kamera, lalu coba lagi. Atau pilih foto dari galeri.';
+    }
+    if (n === 'NotFoundError' || n === 'DevicesNotFoundError') {
+      return 'Kamera tidak ditemukan di perangkat ini. Anda masih bisa memilih foto dari galeri.';
+    }
+    if (n === 'NotReadableError' || n === 'TrackStartError') {
+      return 'Kamera sedang dipakai aplikasi lain. Tutup aplikasi itu lalu coba lagi.';
+    }
+    return 'Kamera tidak bisa dibuka. Coba lagi, atau pilih foto dari galeri.';
+  }
+
+  function bukaKamera() {
+    galatKamera('');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      galatKamera('Browser ini tidak mendukung kamera, atau halaman tidak dibuka lewat HTTPS. Pakai Chrome atau Edge terbaru, atau pilih dari galeri.');
+      return Promise.resolve();
+    }
+    tutupStream();
+    var utama = { video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false };
+    return navigator.mediaDevices.getUserMedia(utama).catch(function (e) {
+      if (e && e.name === 'OverconstrainedError') return navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      throw e;
+    }).then(function (s) {
+      stream = s;
+      var v = $('kam-video');
+      v.srcObject = s;
+      modeKamera('live');
+      var p = v.play();
+      if (p && p.catch) p.catch(function () { /* autoplay sudah diatur */ });
+      return navigator.mediaDevices.enumerateDevices().then(function (list) {
+        var jumlah = list.filter(function (d) { return d.kind === 'videoinput'; }).length;
+        $('btn-ganti').hidden = jumlah < 2;
+      }).catch(function () { $('btn-ganti').hidden = true; });
+    }).catch(function (e) {
+      galatKamera(pesanKamera(e));
+      modeKamera('awal');
+    });
+  }
+
+  function keBlob(canvas, mutu) {
+    return new Promise(function (resolve) { canvas.toBlob(resolve, 'image/jpeg', mutu); });
+  }
+
+  // Menggambar sumber (video atau gambar) ke canvas lalu mengompres menjadi JPEG.
+  function kompres(sumber, w, h) {
+    var skala = Math.min(1, MAKS_SISI / Math.max(w, h));
+    var lebar = Math.max(1, Math.round(w * skala));
+    var tinggi = Math.max(1, Math.round(h * skala));
+    var mutu = [0.85, 0.75, 0.65, 0.55];
+
+    function coba(percobaan) {
+      if (percobaan >= 4) return Promise.reject(new Error('Foto tidak bisa dikecilkan sampai ukuran yang diizinkan.'));
+      var c = document.createElement('canvas');
+      c.width = lebar;
+      c.height = tinggi;
+      c.getContext('2d').drawImage(sumber, 0, 0, lebar, tinggi);
+      var i = 0;
+      function langkah() {
+        if (i >= mutu.length) {
+          lebar = Math.max(1, Math.round(lebar * 0.75));
+          tinggi = Math.max(1, Math.round(tinggi * 0.75));
+          return coba(percobaan + 1);
+        }
+        return keBlob(c, mutu[i++]).then(function (b) {
+          if (b && b.size <= MAKS_BYTE) return { blob: b, lebar: c.width, tinggi: c.height };
+          return langkah();
+        });
+      }
+      return langkah();
+    }
+    return coba(0);
+  }
+
+  function terimaFoto(hasil, sumber) {
+    buangFoto();
+    foto = { blob: hasil.blob, lebar: hasil.lebar, tinggi: hasil.tinggi, sumber: sumber, url: URL.createObjectURL(hasil.blob) };
+    $('kam-hasil').src = foto.url;
+    var kb = Math.round(hasil.blob.size / 1024);
+    var teks = hasil.lebar + ' × ' + hasil.tinggi + ' piksel, ' + kb + ' KB';
+    if (Math.min(hasil.lebar, hasil.tinggi) < 800) {
+      teks += '. Resolusi rendah, hasil hitung atau ukur nanti bisa kurang akurat.';
+    }
+    var i = $('kam-info');
+    i.textContent = teks;
+    i.hidden = false;
+    modeKamera('hasil');
+  }
+
+  function ambilFoto() {
+    var v = $('kam-video');
+    if (!stream || !v.videoWidth || !v.videoHeight) {
+      galatKamera('Kamera belum siap. Tunggu sebentar lalu coba lagi.');
+      return;
+    }
+    galatKamera('');
+    kompres(v, v.videoWidth, v.videoHeight).then(function (hasil) {
+      tutupStream();
+      terimaFoto(hasil, 'kamera');
+    }).catch(function (e) { galatKamera(e.message); });
+  }
+
+  function pilihGaleri(file) {
+    galatKamera('');
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { galatKamera('File yang dipilih bukan gambar.'); return; }
+    if (file.size > 25 * 1024 * 1024) { galatKamera('File terlalu besar. Pilih foto di bawah 25 MB.'); return; }
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      kompres(img, img.naturalWidth, img.naturalHeight).then(function (hasil) {
+        tutupStream();
+        terimaFoto(hasil, 'galeri');
+      }).catch(function (e) { galatKamera(e.message); }).then(function () { URL.revokeObjectURL(url); });
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      galatKamera('Format foto tidak didukung. Pakai foto JPG atau PNG.');
+    };
+    img.src = url;
+  }
+
+  function keBase64(blob) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(String(r.result).split(',')[1] || ''); };
+      r.onerror = function () { reject(new Error('Foto tidak bisa dibaca.')); };
+      r.readAsDataURL(blob);
+    });
+  }
+
+  function kirimFoto() {
+    if (!foto || sedangKirim) return;
+    sedangKirim = true;
+    galatKamera('');
+    var btn = $('btn-kirim');
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan…';
+    keBase64(foto.blob).then(function (b64) {
+      return api('simpanFoto', {
+        jenis: jenisAktif,
+        sumber: foto.sumber,
+        catatan: $('kam-catatan').value,
+        base64: b64
+      });
+    }).then(function () {
+      toast('Foto tersimpan di Google Drive.');
+      buangFoto();
+      $('kam-catatan').value = '';
+      $('kam-info').hidden = true;
+      modeKamera('awal');
+      muatFoto();
+    }).catch(function (e) {
+      if (!e.sudahDitangani) galatKamera('Foto belum tersimpan. ' + e.message);
+    }).then(function () {
+      sedangKirim = false;
+      btn.disabled = false;
+      btn.textContent = 'Simpan foto';
+    });
+  }
+
+  function ulangiFoto() {
+    var sumber = foto ? foto.sumber : 'kamera';
+    buangFoto();
+    $('kam-info').hidden = true;
+    galatKamera('');
+    if (sumber === 'kamera') bukaKamera();
+    else modeKamera('awal');
+  }
+
+  function muatFoto() {
+    var ul = $('daftar-foto');
+    ul.textContent = '';
+    $('kosong-foto').hidden = true;
+    api('daftarFoto', { jenis: jenisAktif }).then(function (d) {
+      d.data.forEach(function (u) {
+        var ket = u.ukuran_kb + ' KB, dari ' + u.sumber;
+        var kids = [
+          el('div', { class: 'atas' }, [
+            el('span', { class: 'judul', text: u.nama_file }),
+            el('span', { class: 'waktu', text: formatWaktu(u.waktu) })
+          ]),
+          el('p', { class: 'catatan-baris', text: ket })
+        ];
+        if (u.catatan) kids.push(el('p', { class: 'catatan-baris', text: u.catatan }));
+        var li = el('li', null, kids);
+        var tombol = el('button', { type: 'button', class: 'tombol sekunder kecil', text: 'Lihat foto' });
+        var gambar = null;
+        tombol.addEventListener('click', function () {
+          if (gambar) { gambar.remove(); gambar = null; tombol.textContent = 'Lihat foto'; return; }
+          tombol.disabled = true;
+          tombol.textContent = 'Memuat…';
+          api('ambilFoto', { upload_id: u.upload_id }).then(function (r) {
+            gambar = el('img', { class: 'foto-gambar', alt: 'Foto ' + u.nama_file, src: r.data_url });
+            li.appendChild(gambar);
+            tombol.textContent = 'Sembunyikan foto';
+          }).catch(function (e) {
+            tombol.textContent = 'Lihat foto';
+            if (!e.sudahDitangani) toast(e.message);
+          }).then(function () { tombol.disabled = false; });
+        });
+        li.appendChild(tombol);
+        ul.appendChild(li);
+      });
+      $('kosong-foto').hidden = d.data.length > 0;
+    }).catch(function (e) {
+      if (!e.sudahDitangani) toast(e.message);
+    });
+  }
+
+  // ------------------------------------------------------------
+  // EVENT
+  // ------------------------------------------------------------
+  function pasangEvent() {
+    $('form-masuk').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      tampilGalat('galat-masuk', '');
+      var btn = $('btn-masuk');
+      btn.disabled = true;
+      btn.textContent = 'Memeriksa…';
+      api('masuk', { nama: $('in-nama').value, email: $('in-email').value }).then(function (h) {
+        token = h.token;
+        simpan.taruh(token);
+        masukApp(h.profil);
+      }).catch(function (e) {
+        tampilGalat('galat-masuk', e.message);
+      }).then(function () {
+        btn.disabled = false;
+        btn.textContent = 'Masuk';
+      });
+    });
+
+    var nav = document.querySelectorAll('.nav button');
+    for (var i = 0; i < nav.length; i++) {
+      nav[i].addEventListener('click', function (ev) {
+        tampil(ev.currentTarget.getAttribute('data-nav'));
+      });
+    }
+
+    $('btn-kembali').addEventListener('click', function () { tampil('beranda'); });
+
+    // kamera
+    $('btn-buka').addEventListener('click', bukaKamera);
+    $('btn-galeri').addEventListener('click', function () { $('in-galeri').click(); });
+    $('in-galeri').addEventListener('change', function (ev) {
+      var file = ev.target.files && ev.target.files[0];
+      ev.target.value = '';
+      pilihGaleri(file);
+    });
+    $('btn-ambil').addEventListener('click', ambilFoto);
+    $('btn-ganti').addEventListener('click', function () {
+      facing = facing === 'environment' ? 'user' : 'environment';
+      bukaKamera();
+    });
+    $('btn-tutup').addEventListener('click', function () { tutupStream(); modeKamera('awal'); });
+    $('btn-kirim').addEventListener('click', kirimFoto);
+    $('btn-ulang').addEventListener('click', ulangiFoto);
+
+    $('form-profil').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      tampilGalat('galat-profil', '');
+      var btn = $('btn-simpan-profil');
+      btn.disabled = true;
+      api('simpanProfil', {
+        data: { nama: $('p-nama').value, peran: $('p-peran').value, instansi: $('p-instansi').value }
+      }).then(function (h) {
+        profil = h.profil;
+        toast('Profil tersimpan.');
+        isiProfil();
+      }).catch(function (e) {
+        if (!e.sudahDitangani) tampilGalat('galat-profil', e.message);
+      }).then(function () { btn.disabled = false; });
+    });
+
+    $('btn-keluar').addEventListener('click', function () {
+      var t = token;
+      // Permintaan keluar memakai token lama; isi permintaan dibuat saat api() dipanggil.
+      var p = api('keluar');
+      sesiBerakhir('Anda sudah keluar.');
+      p.catch(function () { /* sesi lokal sudah dihapus */ });
+      t = null;
+    });
+
+    window.addEventListener('pagehide', tutupStream);
+  }
+
+  // ------------------------------------------------------------
+  // MULAI
+  // ------------------------------------------------------------
+  function mulai() {
+    isiIkon();
+    siapkanFilter();
+    pasangEvent();
+
+    token = null;
+    api('info').then(function (d) {
+      info = d;
+      $('tagline').textContent = d.tagline;
+      $('versi').textContent = d.nama + ' versi ' + d.versi;
+    }).catch(function (e) {
+      // Pesan ini membantu saat pemasangan awal (URL belum diisi / deployment salah).
+      $('layar-masuk').hidden = false;
+      tampilGalat('galat-masuk', e.message);
+    }).then(function () {
+      token = simpan.ambil();
+      if (!token) { tampilLayar('masuk'); return; }
+      api('cekSesi').then(function (h) {
+        masukApp(h.profil);
+      }).catch(function () {
+        // Sesi yang kedaluwarsa sudah dihapus oleh api(); gangguan jaringan tidak menghapus sesi.
+        tampilLayar('masuk');
+      });
+    });
+  }
+
+  mulai();
+})();
+
+</script>
+</body>
+</html>
