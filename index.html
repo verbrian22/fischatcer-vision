@@ -222,7 +222,30 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
-  </style>
+  
+/* ---------- Stage 3: sesi telur, kondisi foto, panduan ---------- */
+.blok { margin: 24px 0 6px; padding-top: 6px; border-top: 2px solid var(--air); }
+.blok h3 { margin-top: 12px; }
+.baris2 { display: grid; gap: 0 14px; }
+.kondisi { margin-top: 16px; border: 1px solid var(--garis); padding: 0 14px 14px; }
+.kondisi summary { cursor: pointer; font-weight: 700; padding: 12px 0 4px; }
+.ringkas { margin: 14px 0; padding: 12px 14px; background: var(--kabut); border-left: 4px solid var(--teal); }
+.ringkas b { font-size: 1.6rem; font-weight: 800; color: var(--daun); }
+.tabel-bungkus { overflow-x: auto; }
+.tabel { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 8px 0; }
+.tabel th, .tabel td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--garis); white-space: nowrap; }
+.tabel th { font-weight: 700; color: var(--lembut); }
+.panduan h3 { margin-top: 28px; }
+.panduan ol, .panduan ul { padding-left: 22px; }
+.panduan li { margin-bottom: 6px; }
+.draf { padding: 10px 14px; background: var(--amber-bg); color: var(--amber); border-left: 4px solid var(--amber); font-weight: 600; }
+@media (min-width: 760px) { .baris2 { grid-template-columns: 1fr 1fr; } }
+@media print {
+  .bar, .nav, .tautan, .no-print, .toast { display: none !important; }
+  body { background: #fff; }
+  .isi { padding: 0; max-width: none; }
+}
+</style>
 </head>
 <body>
   <div id="pemuat" class="pemuat">Memuat aplikasi…</div>
@@ -324,6 +347,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
         <p id="tanggal-hari" class="tanggal"></p>
 
         <div id="daftar-fitur" class="fitur"></div>
+        <p><button type="button" class="tautan" id="btn-panduan">Panduan praktik untuk murid</button></p>
 
         <h3>Catatan terakhir</h3>
         <ul id="terakhir" class="daftar"></ul>
@@ -335,7 +359,39 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
         <button type="button" class="tautan" id="btn-kembali">Kembali ke Beranda</button>
         <h2 id="kam-judul"></h2>
         <p id="kam-deskripsi" class="lembut"></p>
-        <p class="status-fitur">Tahap ini hanya mengambil dan menyimpan foto. Hitungan dan ukuran otomatis belum aktif.</p>
+        <p class="status-fitur" id="kam-status">Tahap ini hanya mengambil dan menyimpan foto. Hitungan dan ukuran otomatis belum aktif.</p>
+
+        <!-- sesi telur: hanya tampil untuk Hitung Telur -->
+        <div id="blok-sesi" class="blok" hidden>
+          <h3>Sesi telur</h3>
+          <p class="lembut">Satu sesi = satu kelompok telur yang ditimbang total, dengan beberapa sampel sebagai ulangan.</p>
+          <label for="sesi-pilih">Sesi</label>
+          <select id="sesi-pilih"></select>
+
+          <div id="sesi-baru" hidden>
+            <div class="baris2">
+              <div>
+                <label for="sesi-total">Berat seluruh telur (gram)</label>
+                <input id="sesi-total" type="text" inputmode="decimal" placeholder="mis. 250">
+              </div>
+              <div>
+                <label for="sesi-ketelitian">Ketelitian timbangan</label>
+                <select id="sesi-ketelitian">
+                  <option value="0.001">0,001 g</option>
+                  <option value="0.01" selected>0,01 g</option>
+                  <option value="0.1">0,1 g</option>
+                  <option value="1">1 g</option>
+                </select>
+              </div>
+            </div>
+            <label for="sesi-catatan">Catatan sesi (kode induk, bak, cara menimbang)</label>
+            <input id="sesi-catatan" type="text" maxlength="100">
+            <p id="galat-sesi" class="galat" role="alert" hidden></p>
+            <button type="button" class="tombol" id="btn-buat-sesi">Buat sesi</button>
+          </div>
+
+          <div id="sesi-info" hidden></div>
+        </div>
 
         <div class="kam-area">
           <div class="bidik">
@@ -359,6 +415,63 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
           </div>
 
           <div id="aksi-kirim" hidden>
+            <div id="blok-sampel" hidden>
+              <div class="baris2">
+                <div>
+                  <label for="k-berat-sampel">Berat sampel (gram)</label>
+                  <input id="k-berat-sampel" type="text" inputmode="decimal" placeholder="mis. 1">
+                </div>
+                <div>
+                  <label for="k-jumlah">Jumlah telur hasil hitung manual (jika ada)</label>
+                  <input id="k-jumlah" type="text" inputmode="numeric">
+                </div>
+              </div>
+            </div>
+
+            <details class="kondisi">
+              <summary>Kondisi foto (disarankan diisi)</summary>
+              <div class="baris2">
+                <div>
+                  <label for="k-pencahayaan">Pencahayaan</label>
+                  <select id="k-pencahayaan">
+                    <option value="">Tidak diisi</option>
+                    <option value="merata">Merata</option>
+                    <option value="redup">Redup</option>
+                    <option value="silau">Ada pantulan atau silau</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="k-wadah">Wadah</label>
+                  <select id="k-wadah">
+                    <option value="">Tidak diisi</option>
+                    <option value="piring">Piring atau nampan datar</option>
+                    <option value="baskom">Baskom</option>
+                    <option value="wadah-kecil">Wadah kecil atau cawan</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="k-latar">Latar</label>
+                  <select id="k-latar">
+                    <option value="">Tidak diisi</option>
+                    <option value="putih">Putih</option>
+                    <option value="gelap">Gelap</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="k-kepadatan">Kepadatan objek</label>
+                  <select id="k-kepadatan">
+                    <option value="">Tidak diisi</option>
+                    <option value="tersebar">Tersebar, tidak bersentuhan</option>
+                    <option value="sedang">Sebagian bersentuhan</option>
+                    <option value="padat">Padat atau menumpuk</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+
             <label for="kam-catatan">Catatan (boleh dikosongkan)</label>
             <textarea id="kam-catatan" maxlength="200" rows="2"></textarea>
             <div class="aksi-kamera">
@@ -376,6 +489,46 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
         <h3>Foto tersimpan</h3>
         <ul id="daftar-foto" class="daftar"></ul>
         <p id="kosong-foto" class="kosong" hidden>Belum ada foto untuk kegiatan ini.</p>
+      </section>
+
+      <!-- PANDUAN PRAKTIK -->
+      <section id="v-panduan" class="tampil panduan" hidden>
+        <button type="button" class="tautan" id="btn-kembali-panduan">Kembali ke Beranda</button>
+        <h2>Panduan praktik untuk murid</h2>
+        <p class="draf">Draf awal. Panduan ini direvisi setelah foto pertama terkumpul dan diuji.</p>
+
+        <h3>Hitung telur dengan metode sampel</h3>
+        <ol>
+          <li>Siapkan timbangan (catat ketelitiannya), piring atau nampan datar berlatar polos, dan HP. Penyangga HP membantu agar kamera tegak lurus.</li>
+          <li>Di aplikasi: Beranda, Hitung Telur, lalu Sesi, pilih <b>Buat sesi baru</b>. Isi berat seluruh telur dan ketelitian timbangan. Di catatan sesi, tulis cara menimbang (misalnya telur sudah ditiriskan).</li>
+          <li>Timbang satu sampel telur (sekitar 1 gram). Cara menimbang harus sama untuk semua sampel dalam satu sesi.</li>
+          <li>Sebar telur satu lapis di piring. Usahakan tidak menumpuk dan tidak menggumpal.</li>
+          <li>Foto dari atas dengan kamera tegak lurus. Cahaya merata, tanpa pantulan, gambar tajam.</li>
+          <li>Isi berat sampel. Jika sempat, hitung telur satu per satu dan isi jumlahnya. Isi juga kondisi foto.</li>
+          <li>Ulangi dengan 2 sampai 3 sampel dari telur yang sama. Lihat hasil perkiraan di bagian Sesi.</li>
+        </ol>
+
+        <h3>Hitung larva dan benih</h3>
+        <ul>
+          <li>Taruh larva atau benih di wadah datar berlatar polos dengan air tipis agar tidak menumpuk.</li>
+          <li>Foto dari atas, cahaya merata, tanpa pantulan.</li>
+          <li>Isi kondisi foto, terutama kepadatan objek.</li>
+        </ul>
+
+        <h3>Ukur benih</h3>
+        <ul>
+          <li>Letakkan benda acuan yang ukurannya diketahui (misalnya penggaris) di dalam foto, sejajar dengan benih.</li>
+          <li>Foto dari atas, bukan dari samping. Sebar benih agar tidak saling menutupi.</li>
+        </ul>
+
+        <h3>Aturan umum</h3>
+        <ul>
+          <li>Pakai foto yang Anda ambil sendiri. Jangan mengunduh foto dari internet.</li>
+          <li>Jangan mengedit atau memberi filter pada foto.</li>
+          <li>Satu foto untuk satu sampel. Jangan memotret wajah orang.</li>
+        </ul>
+
+        <button type="button" class="tombol sekunder no-print" id="btn-cetak">Cetak panduan ini</button>
       </section>
 
       <!-- RIWAYAT -->
@@ -418,6 +571,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
           <dt>Terdaftar</dt><dd id="p-dibuat">-</dd>
           <dt>Masuk terakhir</dt><dd id="p-login">-</dd>
         </dl>
+        <div class="blok no-print">
+          <h3>Ringkasan dataset (guru)</h3>
+          <p class="lembut">Khusus guru. Isi kode guru yang diatur di Apps Script.</p>
+          <label for="kode-guru">Kode guru</label>
+          <input id="kode-guru" type="password" autocomplete="off">
+          <p id="galat-dataset" class="galat" role="alert" hidden></p>
+          <button type="button" class="tombol sekunder" id="btn-dataset">Lihat ringkasan</button>
+          <div id="hasil-dataset"></div>
+        </div>
         <button type="button" class="tombol sekunder" id="btn-keluar">Keluar</button>
         <p class="versi" id="versi"></p>
       </section>
@@ -455,7 +617,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
   var FITUR = [
     {
       kode: 'egg', judul: 'Hitung Telur',
-      deskripsi: 'Foto telur ikan untuk dihitung dan disimpan hasilnya.',
+      deskripsi: 'Foto sampel telur dan hitung perkiraan jumlah seluruh telur dari beratnya.',
       tips: ['Pastikan cahaya merata dan hindari pantulan di air atau wadah.',
              'Pakai latar polos yang kontras dengan telur.',
              'Arahkan kamera lurus dari atas wadah, jangan miring.',
@@ -481,6 +643,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 
   var STATUS_VALIDASI = {
     'uji-coba': 'Data uji',
+    'manual': 'Hitung manual (belum AI)',
     'belum-divalidasi': 'Belum divalidasi',
     'tervalidasi': 'Sudah divalidasi'
   };
@@ -615,10 +778,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 
   function tampil(nama, kode) {
     if (nama !== 'kamera') { tutupStream(); }
-    ['beranda', 'kamera', 'riwayat', 'profil'].forEach(function (v) {
+    ['beranda', 'kamera', 'riwayat', 'profil', 'panduan'].forEach(function (v) {
       $('v-' + v).hidden = v !== nama;
     });
-    var aktif = nama === 'kamera' ? 'beranda' : nama;
+    var aktif = (nama === 'kamera' || nama === 'panduan') ? 'beranda' : nama;
     var tombol = document.querySelectorAll('.nav button');
     for (var i = 0; i < tombol.length; i++) {
       if (tombol[i].getAttribute('data-nav') === aktif) tombol[i].setAttribute('aria-current', 'page');
@@ -673,6 +836,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
   function hasilTeks(a) {
     if (a.jenis === 'fry_measure') {
       return a.panjang_mm ? a.panjang_mm + ' mm' : 'Belum ada hasil';
+    }
+    if (a.model_version === 'manual') {
+      return a.jumlah ? 'Sekitar ' + Number(a.jumlah).toLocaleString('id-ID') + ' butir (perkiraan dari sampel)' : 'Belum ada hasil';
     }
     return a.jumlah ? a.jumlah + ' terdeteksi' : 'Belum ada hasil';
   }
@@ -786,6 +952,17 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     $('kam-info').hidden = true;
     $('kam-catatan').value = '';
     modeKamera('awal');
+
+    var egg = kode === 'egg';
+    $('kam-status').textContent = egg
+      ? 'Hitungan otomatis (AI) belum aktif. Untuk sementara, jumlah telur di sampel diisi dari hitung manual.'
+      : 'Tahap ini hanya mengambil dan menyimpan foto. Hitungan dan ukuran otomatis belum aktif.';
+    sesiAktif = null;
+    $('blok-sesi').hidden = !egg;
+    $('blok-sampel').hidden = true;
+    $('sesi-baru').hidden = true;
+    $('sesi-info').hidden = true;
+    if (egg) muatDaftarSesi(null);
     muatFoto();
   }
 
@@ -938,25 +1115,42 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 
   function kirimFoto() {
     if (!foto || sedangKirim) return;
+    var pakaiSesi = jenisAktif === 'egg' && !!sesiAktif;
+    if (pakaiSesi && !(angkaDari($('k-berat-sampel').value) > 0)) {
+      galatKamera('Isi berat sampel dalam gram lebih dulu.');
+      return;
+    }
     sedangKirim = true;
     galatKamera('');
     var btn = $('btn-kirim');
     btn.disabled = true;
     btn.textContent = 'Menyimpan…';
     keBase64(foto.blob).then(function (b64) {
-      return api('simpanFoto', {
+      var data = {
         jenis: jenisAktif,
         sumber: foto.sumber,
         catatan: $('kam-catatan').value,
-        base64: b64
-      });
+        base64: b64,
+        pencahayaan: $('k-pencahayaan').value,
+        wadah: $('k-wadah').value,
+        latar: $('k-latar').value,
+        kepadatan: $('k-kepadatan').value
+      };
+      if (pakaiSesi) {
+        data.sesi_id = sesiAktif;
+        data.berat_sampel_g = $('k-berat-sampel').value;
+        data.jumlah_manual = $('k-jumlah').value;
+      }
+      return api('simpanFoto', data);
     }).then(function () {
-      toast('Foto tersimpan di Google Drive.');
+      toast(pakaiSesi ? 'Foto dan sampel tersimpan.' : 'Foto tersimpan di Google Drive.');
       buangFoto();
       $('kam-catatan').value = '';
+      $('k-jumlah').value = '';
       $('kam-info').hidden = true;
       modeKamera('awal');
       muatFoto();
+      if (pakaiSesi) muatHasilSesi();
     }).catch(function (e) {
       if (!e.sudahDitangani) galatKamera('Foto belum tersimpan. ' + e.message);
     }).then(function () {
@@ -1013,6 +1207,174 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
   }
 
   // ------------------------------------------------------------
+  // SESI TELUR (metode sampel berat)
+  // ------------------------------------------------------------
+  var sesiAktif = null;
+
+  function angkaDari(teks) {
+    var t = String(teks === undefined || teks === null ? '' : teks).replace(',', '.').trim();
+    if (t === '') return NaN;
+    var n = Number(t);
+    return isFinite(n) ? n : NaN;
+  }
+
+  function fmt(n, desimal) {
+    if (n === null || n === undefined || isNaN(n)) return '-';
+    return Number(n).toLocaleString('id-ID', { maximumFractionDigits: desimal === undefined ? 0 : desimal });
+  }
+
+  function muatDaftarSesi(pilihId) {
+    return api('daftarSesi').then(function (d) {
+      var s = $('sesi-pilih');
+      s.textContent = '';
+      s.appendChild(el('option', { value: '', text: 'Tanpa sesi (hanya simpan foto)' }));
+      d.data.forEach(function (x) {
+        var label = (x.catatan ? x.catatan + ', ' : '') + fmt(x.berat_total_g, 2) + ' g, ' + x.jumlah_sampel + ' sampel';
+        s.appendChild(el('option', { value: x.sesi_id, text: label }));
+      });
+      s.appendChild(el('option', { value: '__baru', text: '+ Buat sesi baru' }));
+      s.value = pilihId || '';
+      aturSesi();
+    }).catch(function (e) {
+      if (!e.sudahDitangani) toast(e.message);
+    });
+  }
+
+  function aturSesi() {
+    var v = $('sesi-pilih').value;
+    $('sesi-baru').hidden = v !== '__baru';
+    sesiAktif = (v && v !== '__baru') ? v : null;
+    $('blok-sampel').hidden = !sesiAktif;
+    $('sesi-info').hidden = !sesiAktif;
+    if (sesiAktif) muatHasilSesi();
+  }
+
+  function muatHasilSesi() {
+    if (!sesiAktif) return;
+    var id = sesiAktif;
+    api('hasilSesi', { sesi_id: id }).then(function (d) {
+      if (id === sesiAktif) renderHasilSesi(d);
+    }).catch(function (e) {
+      if (!e.sudahDitangani) toast(e.message);
+    });
+  }
+
+  function renderHasilSesi(d) {
+    var w = $('sesi-info');
+    w.textContent = '';
+    var r = d.ringkasan;
+    w.appendChild(el('p', { class: 'lembut', text:
+      'Berat seluruh telur ' + fmt(d.sesi.berat_total_g, 2) + ' g. Ketelitian timbangan ' + fmt(d.sesi.ketelitian_g, 3) + ' g.' }));
+
+    if (r.estimasi_total === null) {
+      w.appendChild(el('p', { class: 'lembut', text:
+        'Belum ada sampel dengan hitungan manual. Tambahkan foto sampel dan isi jumlah telurnya untuk melihat perkiraan total.' }));
+    } else {
+      var box = el('div', { class: 'ringkas' }, [
+        el('b', { text: fmt(r.estimasi_total) + ' butir' }),
+        el('div', { text: 'perkiraan jumlah seluruh telur' }),
+        el('div', { class: 'catatan-baris', text: 'Rata-rata ' + fmt(r.rata_per_gram, 1) + ' butir per gram dari ' + r.sampel_terhitung + ' sampel.' })
+      ]);
+      if (r.sampel_terhitung >= 2) {
+        box.appendChild(el('div', { class: 'catatan-baris', text:
+          'Rentang antar sampel: ' + fmt(r.min_total) + ' sampai ' + fmt(r.max_total) + ' butir. Variasi antar sampel: ' + fmt(r.kv_persen, 1) + '%.' }));
+      } else {
+        box.appendChild(el('div', { class: 'catatan-baris', text:
+          'Baru satu sampel, sebaran antar sampel belum diketahui. Tambahkan sampel ulangan.' }));
+      }
+      box.appendChild(el('div', { class: 'catatan-baris', text:
+        'Ketelitian timbangan memberi selisih sekitar ' + fmt(r.galat_timbang_persen, 1) + '% pada sampel terkecil.' }));
+      w.appendChild(box);
+      var tb = el('button', { type: 'button', class: 'tombol', text: 'Simpan perkiraan ke Riwayat' });
+      tb.addEventListener('click', function () {
+        tb.disabled = true;
+        api('simpanHasilSesi', { sesi_id: d.sesi.sesi_id }).then(function () {
+          toast('Perkiraan tersimpan di Riwayat.');
+        }).catch(function (e) {
+          if (!e.sudahDitangani) toast(e.message);
+        }).then(function () { tb.disabled = false; });
+      });
+      w.appendChild(tb);
+    }
+
+    if (d.sampel.length) {
+      var baris = d.sampel.map(function (x, i) {
+        var per = (x.jumlah_manual && x.berat_sampel_g) ? fmt(x.jumlah_manual / x.berat_sampel_g, 1) : '-';
+        return el('tr', null, [
+          el('td', { text: String(i + 1) }),
+          el('td', { text: fmt(x.berat_sampel_g, 3) }),
+          el('td', { text: x.jumlah_manual ? fmt(x.jumlah_manual) : '-' }),
+          el('td', { text: per })
+        ]);
+      });
+      var tabel = el('table', { class: 'tabel' }, [
+        el('thead', null, [el('tr', null, [
+          el('th', { text: 'Sampel' }), el('th', { text: 'Berat (g)' }),
+          el('th', { text: 'Jumlah' }), el('th', { text: 'Butir per gram' })
+        ])]),
+        el('tbody', null, baris)
+      ]);
+      w.appendChild(el('div', { class: 'tabel-bungkus' }, [tabel]));
+    }
+  }
+
+  function buatSesiBaru() {
+    tampilGalat('galat-sesi', '');
+    var total = angkaDari($('sesi-total').value);
+    if (!(total > 0)) { tampilGalat('galat-sesi', 'Isi berat seluruh telur dalam gram (angka lebih dari 0).'); return; }
+    var btn = $('btn-buat-sesi');
+    btn.disabled = true;
+    api('buatSesi', {
+      berat_total_g: $('sesi-total').value,
+      ketelitian_g: $('sesi-ketelitian').value,
+      catatan: $('sesi-catatan').value
+    }).then(function (d) {
+      $('sesi-total').value = '';
+      $('sesi-catatan').value = '';
+      toast('Sesi dibuat.');
+      return muatDaftarSesi(d.sesi.sesi_id);
+    }).catch(function (e) {
+      if (!e.sudahDitangani) tampilGalat('galat-sesi', e.message);
+    }).then(function () { btn.disabled = false; });
+  }
+
+  // ------------------------------------------------------------
+  // RINGKASAN DATASET (guru)
+  // ------------------------------------------------------------
+  function muatRingkasanDataset() {
+    var kode = $('kode-guru').value;
+    if (!kode) { tampilGalat('galat-dataset', 'Isi kode guru lebih dulu.'); return; }
+    tampilGalat('galat-dataset', '');
+    var btn = $('btn-dataset');
+    btn.disabled = true;
+    api('ringkasanDataset', { kode: kode }).then(function (d) {
+      var r = d.ringkasan;
+      var baris = [
+        ['Pengguna terdaftar', r.pengguna],
+        ['Foto, seluruhnya', r.foto_total],
+        ['Foto Hitung Telur', r.foto_telur],
+        ['Foto Hitung Larva & Benih', r.foto_larva_benih],
+        ['Foto Ukur Benih', r.foto_ukur_benih],
+        ['Foto dengan catatan kondisi', r.foto_dengan_kondisi],
+        ['Sesi telur', r.sesi_telur],
+        ['Sampel telur', r.sampel_telur],
+        ['Sampel dengan hitungan manual', r.sampel_dengan_hitungan_manual]
+      ];
+      var dl = el('dl', { class: 'meta' });
+      baris.forEach(function (b) {
+        dl.appendChild(el('dt', { text: b[0] }));
+        dl.appendChild(el('dd', { text: fmt(b[1]) }));
+      });
+      var w = $('hasil-dataset');
+      w.textContent = '';
+      w.appendChild(dl);
+      $('kode-guru').value = '';
+    }).catch(function (e) {
+      if (!e.sudahDitangani) tampilGalat('galat-dataset', e.message);
+    }).then(function () { btn.disabled = false; });
+  }
+
+  // ------------------------------------------------------------
   // EVENT
   // ------------------------------------------------------------
   function pasangEvent() {
@@ -1042,6 +1404,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     }
 
     $('btn-kembali').addEventListener('click', function () { tampil('beranda'); });
+    $('btn-panduan').addEventListener('click', function () { tampil('panduan'); });
+    $('btn-kembali-panduan').addEventListener('click', function () { tampil('beranda'); });
+    $('btn-cetak').addEventListener('click', function () { window.print(); });
+    $('sesi-pilih').addEventListener('change', aturSesi);
+    $('btn-buat-sesi').addEventListener('click', buatSesiBaru);
+    $('btn-dataset').addEventListener('click', muatRingkasanDataset);
 
     // kamera
     $('btn-buka').addEventListener('click', bukaKamera);
