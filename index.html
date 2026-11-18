@@ -223,6 +223,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
   
+/* ---------- pengitung sederhana ---------- */
+.auto { margin-top: 16px; border: 1px solid var(--garis); padding: 4px 14px 14px; }
+.auto h3 { margin: 12px 0 4px; font-size: 1.05rem; }
+input[type="range"] { min-height: 0; padding: 0; border: 0; accent-color: var(--teal); }
+input[type="checkbox"] { width: auto; min-height: 0; margin-right: 8px; }
+.cek { display: flex; align-items: center; font-weight: 500; margin: 12px 0 0; }
+.ringkas.percobaan { border-left-color: #B7791F; background: var(--amber-bg); }
+.ringkas.percobaan b { color: var(--amber); }
+
 /* ---------- Stage 3: sesi telur, kondisi foto, panduan ---------- */
 .blok { margin: 24px 0 6px; padding-top: 6px; border-top: 2px solid var(--air); }
 .blok h3 { margin-top: 12px; }
@@ -415,6 +424,40 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
           </div>
 
           <div id="aksi-kirim" hidden>
+            <div id="blok-auto" class="auto" hidden>
+              <h3>Hitung otomatis (percobaan)</h3>
+              <p class="draf">Percobaan dengan pengolahan gambar biasa, belum divalidasi. Bandingkan selalu dengan hitungan manual.</p>
+              <button type="button" class="tombol sekunder" id="btn-auto">Coba hitung otomatis</button>
+              <div id="auto-kontrol" hidden>
+                <div class="baris2">
+                  <div>
+                    <label for="auto-polaritas">Warna telur terhadap latar</label>
+                    <select id="auto-polaritas">
+                      <option value="">Otomatis</option>
+                      <option value="gelap">Telur lebih gelap dari latar</option>
+                      <option value="terang">Telur lebih terang dari latar</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="auto-diameter">Ukuran telur di foto (diameter, piksel)</label>
+                    <input id="auto-diameter" type="text" inputmode="decimal">
+                  </div>
+                </div>
+                <label for="auto-kepekaan">Kepekaan</label>
+                <input id="auto-kepekaan" type="range" min="1" max="100" value="50">
+                <label class="cek" for="auto-tanda"><input id="auto-tanda" type="checkbox" checked>Tampilkan tanda pada foto</label>
+                <button type="button" class="tombol sekunder kecil" id="btn-hitung-ulang">Hitung ulang</button>
+              </div>
+              <div id="auto-hasil" class="ringkas percobaan" hidden>
+                <b id="auto-angka"></b>
+                <div>hasil percobaan pada sampel ini</div>
+                <div class="catatan-baris" id="auto-detail"></div>
+                <div class="catatan-baris" id="auto-peringatan"></div>
+                <div class="catatan-baris" id="auto-banding"></div>
+              </div>
+              <p class="catatan-baris">Hasil otomatis tersimpan bersama sampel jika Anda memakai sesi.</p>
+            </div>
+
             <div id="blok-sampel" hidden>
               <div class="baris2">
                 <div>
@@ -978,6 +1021,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
   function buangFoto() {
     if (foto && foto.url) URL.revokeObjectURL(foto.url);
     foto = null;
+    resetAuto();
+    $('blok-auto').hidden = true;
   }
 
   function pesanKamera(e) {
@@ -1060,6 +1105,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     buangFoto();
     foto = { blob: hasil.blob, lebar: hasil.lebar, tinggi: hasil.tinggi, sumber: sumber, url: URL.createObjectURL(hasil.blob) };
     $('kam-hasil').src = foto.url;
+    resetAuto();
+    $('blok-auto').hidden = jenisAktif !== 'egg';
     var kb = Math.round(hasil.blob.size / 1024);
     var teks = hasil.lebar + ' × ' + hasil.tinggi + ' piksel, ' + kb + ' KB';
     if (Math.min(hasil.lebar, hasil.tinggi) < 800) {
@@ -1140,6 +1187,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
         data.sesi_id = sesiAktif;
         data.berat_sampel_g = $('k-berat-sampel').value;
         data.jumlah_manual = $('k-jumlah').value;
+        if (autoHasil) {
+          data.jumlah_ai = autoHasil.jumlah;
+          data.parameter_ai = 'cv-sederhana-v1; diameter=' + autoHasil.diameter + '; kepekaan=' + autoHasil.kepekaan +
+            '; warna=' + autoHasil.polaritas;
+        }
       }
       return api('simpanFoto', data);
     }).then(function () {
@@ -1204,6 +1256,315 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     }).catch(function (e) {
       if (!e.sudahDitangani) toast(e.message);
     });
+  }
+
+  // ------------------------------------------------------------
+  // PENGITUNG SEDERHANA (percobaan): pengolahan gambar biasa, tanpa AI terlatih
+  // ------------------------------------------------------------
+  var Pengitung = (function () {
+    function batas(x, a, b) { return Math.min(b, Math.max(a, x)); }
+
+    // Tahap berat sekali per foto: abu-abu, latar lokal, selisih terhadap latar.
+    function siapkan(data, w, h) {
+      var n = w * h;
+      var gray = new Float32Array(n);
+      for (var i = 0, j = 0; i < n; i++, j += 4) {
+        gray[i] = 0.299 * data[j] + 0.587 * data[j + 1] + 0.114 * data[j + 2];
+      }
+      var W = w + 1;
+      var integ = new Float64Array(W * (h + 1));
+      for (var y = 0; y < h; y++) {
+        var baris = 0;
+        for (var x = 0; x < w; x++) {
+          baris += gray[y * w + x];
+          integ[(y + 1) * W + (x + 1)] = integ[y * W + (x + 1)] + baris;
+        }
+      }
+      var win = Math.max(25, Math.round(Math.min(w, h) / 12));
+      if (win % 2 === 0) win++;
+      var r = (win - 1) / 2;
+      var selisih = new Float32Array(n);
+      var sum = 0, sum2 = 0;
+      for (var y2 = 0; y2 < h; y2++) {
+        var y0 = Math.max(0, y2 - r), y1 = Math.min(h - 1, y2 + r);
+        for (var x2 = 0; x2 < w; x2++) {
+          var x0 = Math.max(0, x2 - r), x1 = Math.min(w - 1, x2 + r);
+          var jml = integ[(y1 + 1) * W + (x1 + 1)] - integ[y0 * W + (x1 + 1)] - integ[(y1 + 1) * W + x0] + integ[y0 * W + x0];
+          var lokal = jml / ((x1 - x0 + 1) * (y1 - y0 + 1));
+          var sel = gray[y2 * w + x2] - lokal;
+          selisih[y2 * w + x2] = sel;
+          sum += sel;
+          sum2 += sel * sel;
+        }
+      }
+      var mean = sum / n;
+      var sd = Math.sqrt(Math.max(1e-6, sum2 / n - mean * mean));
+      var skew = 0;
+      for (var k = 0; k < n; k++) {
+        var z = (selisih[k] - mean) / sd;
+        skew += z * z * z;
+      }
+      skew /= n;
+      return { w: w, h: h, selisih: selisih, sd: sd, skew: skew };
+    }
+
+    // Tahap ringan: ambang, komponen, ukuran telur, pemisahan telur yang menempel.
+    function hitung(st, opsi) {
+      var w = st.w, h = st.h, n = w * h;
+      var pol = (opsi.polaritas === 'gelap' || opsi.polaritas === 'terang') ? opsi.polaritas : (st.skew < 0 ? 'gelap' : 'terang');
+      var kep = batas(opsi.kepekaan || 50, 1, 100);
+      var t = Math.max(3, st.sd * (1.6 - 1.4 * kep / 100));
+      var sel = st.selisih;
+      var mask = new Uint8Array(n);
+      var i;
+      if (pol === 'gelap') { for (i = 0; i < n; i++) mask[i] = sel[i] < -t ? 1 : 0; }
+      else { for (i = 0; i < n; i++) mask[i] = sel[i] > t ? 1 : 0; }
+
+      // komponen terhubung (4 tetangga)
+      var label = new Int32Array(n);
+      var tumpuk = new Int32Array(n);
+      var luas = [0], sx = [0], sy = [0];
+      var banyak = 0;
+      for (i = 0; i < n; i++) {
+        if (mask[i] === 1 && label[i] === 0) {
+          banyak++;
+          var sp = 0;
+          tumpuk[sp++] = i;
+          label[i] = banyak;
+          var a = 0, cx = 0, cy = 0;
+          while (sp > 0) {
+            var p = tumpuk[--sp];
+            var py = (p / w) | 0;
+            var px = p - py * w;
+            a++; cx += px; cy += py;
+            if (px > 0 && mask[p - 1] === 1 && label[p - 1] === 0) { label[p - 1] = banyak; tumpuk[sp++] = p - 1; }
+            if (px < w - 1 && mask[p + 1] === 1 && label[p + 1] === 0) { label[p + 1] = banyak; tumpuk[sp++] = p + 1; }
+            if (py > 0 && mask[p - w] === 1 && label[p - w] === 0) { label[p - w] = banyak; tumpuk[sp++] = p - w; }
+            if (py < h - 1 && mask[p + w] === 1 && label[p + w] === 0) { label[p + w] = banyak; tumpuk[sp++] = p + w; }
+          }
+          luas.push(a); sx.push(cx); sy.push(cy);
+        }
+      }
+
+      // perkiraan ukuran satu telur: persentil ke-40 dari luas komponen (abaikan bintik sangat kecil)
+      var daftar = [];
+      var c;
+      for (c = 1; c <= banyak; c++) { if (luas[c] >= 6) daftar.push(luas[c]); }
+      var diaAuto = 10;
+      if (daftar.length >= 5) {
+        daftar.sort(function (u, v) { return u - v; });
+        var med = daftar[Math.floor(daftar.length * 0.4)];
+        diaAuto = 2 * Math.sqrt(med / Math.PI);
+      }
+      diaAuto = Math.round(batas(diaAuto, 3, 80) * 10) / 10;
+      var dia = opsi.diameter > 0 ? batas(opsi.diameter, 3, 80) : diaAuto;
+      var R = dia / 2;
+      var minLuas = Math.max(4, Math.round(0.2 * Math.PI * R * R));
+
+      var simpan = new Uint8Array(banyak + 1);
+      var komponen = 0;
+      for (c = 1; c <= banyak; c++) { if (luas[c] >= minLuas) { simpan[c] = 1; komponen++; } }
+
+      // jarak ke latar (chamfer) pada komponen yang dipertahankan
+      var dt = new Float32Array(n);
+      for (i = 0; i < n; i++) dt[i] = (label[i] > 0 && simpan[label[i]] === 1) ? 1e6 : 0;
+      var x, y, pp, v, nb;
+      for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+          pp = y * w + x;
+          if (dt[pp] === 0) continue;
+          v = dt[pp];
+          nb = x > 0 ? dt[pp - 1] : 0; if (nb + 1 < v) v = nb + 1;
+          nb = y > 0 ? dt[pp - w] : 0; if (nb + 1 < v) v = nb + 1;
+          nb = (x > 0 && y > 0) ? dt[pp - w - 1] : 0; if (nb + 1.4142 < v) v = nb + 1.4142;
+          nb = (x < w - 1 && y > 0) ? dt[pp - w + 1] : 0; if (nb + 1.4142 < v) v = nb + 1.4142;
+          dt[pp] = v;
+        }
+      }
+      for (y = h - 1; y >= 0; y--) {
+        for (x = w - 1; x >= 0; x--) {
+          pp = y * w + x;
+          if (dt[pp] === 0) continue;
+          v = dt[pp];
+          nb = x < w - 1 ? dt[pp + 1] : 0; if (nb + 1 < v) v = nb + 1;
+          nb = y < h - 1 ? dt[pp + w] : 0; if (nb + 1 < v) v = nb + 1;
+          nb = (x < w - 1 && y < h - 1) ? dt[pp + w + 1] : 0; if (nb + 1.4142 < v) v = nb + 1.4142;
+          nb = (x > 0 && y < h - 1) ? dt[pp + w - 1] : 0; if (nb + 1.4142 < v) v = nb + 1.4142;
+          dt[pp] = v;
+        }
+      }
+
+      // satu titik per puncak jarak (greedy, puncak tertinggi lebih dulu)
+      var minPuncak = Math.max(1.2, 0.6 * R);
+      var kand = [];
+      for (i = 0; i < n; i++) { if (dt[i] >= minPuncak) kand.push(i); }
+      kand.sort(function (u, q) { return dt[q] - dt[u]; });
+      var tempati = new Uint8Array(n);
+      var rn = Math.max(2, Math.round(1.1 * R));
+      var titik = [];
+      var adaPuncak = new Uint8Array(banyak + 1);
+      for (var m = 0; m < kand.length; m++) {
+        var q = kand[m];
+        if (tempati[q] === 1) continue;
+        var qy = (q / w) | 0;
+        var qx = q - qy * w;
+        titik.push([qx, qy]);
+        adaPuncak[label[q]] = 1;
+        for (var dy = -rn; dy <= rn; dy++) {
+          var yy = qy + dy;
+          if (yy < 0 || yy >= h) continue;
+          for (var dx = -rn; dx <= rn; dx++) {
+            var xx = qx + dx;
+            if (xx < 0 || xx >= w) continue;
+            if (dx * dx + dy * dy <= rn * rn) tempati[yy * w + xx] = 1;
+          }
+        }
+      }
+      // komponen kecil tanpa puncak tetap dihitung satu
+      for (c = 1; c <= banyak; c++) {
+        if (simpan[c] === 1 && adaPuncak[c] === 0) titik.push([sx[c] / luas[c], sy[c] / luas[c]]);
+      }
+
+      return { jumlah: titik.length, titik: titik, diameter: dia, diameterAuto: diaAuto, polaritas: pol, kepekaan: kep, komponen: komponen };
+    }
+
+    return { siapkan: siapkan, hitung: hitung };
+  })();
+
+  // ------------------------------------------------------------
+  // HITUNG OTOMATIS (percobaan): antarmuka
+  // ------------------------------------------------------------
+  var autoState = null;
+  var autoHasil = null;
+  var autoGambar = null;
+  var autoTimer = null;
+
+  function resetAuto() {
+    autoState = null;
+    autoHasil = null;
+    autoGambar = null;
+    $('auto-kontrol').hidden = true;
+    $('auto-hasil').hidden = true;
+    $('auto-diameter').value = '';
+    $('auto-polaritas').value = '';
+    $('auto-kepekaan').value = '50';
+    var b = $('btn-auto');
+    b.hidden = false;
+    b.disabled = false;
+    b.textContent = 'Coba hitung otomatis';
+  }
+
+  function mulaiAuto() {
+    if (!foto) return;
+    galatKamera('');
+    var btn = $('btn-auto');
+    btn.disabled = true;
+    btn.textContent = 'Menyiapkan…';
+    var img = new Image();
+    img.onload = function () {
+      setTimeout(function () {
+        try {
+          var c = document.createElement('canvas');
+          c.width = img.naturalWidth;
+          c.height = img.naturalHeight;
+          var cx = c.getContext('2d');
+          cx.drawImage(img, 0, 0);
+          var data = cx.getImageData(0, 0, c.width, c.height).data;
+          autoGambar = img;
+          autoState = Pengitung.siapkan(data, c.width, c.height);
+          btn.hidden = true;
+          $('auto-kontrol').hidden = false;
+          jalankanAuto(true);
+        } catch (e) {
+          galatKamera('Hitung otomatis gagal disiapkan: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = 'Coba hitung otomatis';
+        }
+      }, 30);
+    };
+    img.onerror = function () {
+      galatKamera('Foto tidak bisa dibaca untuk dihitung.');
+      btn.disabled = false;
+      btn.textContent = 'Coba hitung otomatis';
+    };
+    img.src = foto.url;
+  }
+
+  function jalankanAuto(pertama) {
+    if (!autoState) return;
+    var btn = $('btn-hitung-ulang');
+    btn.disabled = true;
+    btn.textContent = 'Menghitung…';
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(function () {
+      try {
+        var d = angkaDari($('auto-diameter').value);
+        autoHasil = Pengitung.hitung(autoState, {
+          polaritas: $('auto-polaritas').value,
+          kepekaan: Number($('auto-kepekaan').value),
+          diameter: pertama ? 0 : (d > 0 ? d : 0)
+        });
+        if (pertama) $('auto-diameter').value = String(autoHasil.diameter);
+        tampilkanHasilAuto();
+      } catch (e) {
+        galatKamera('Hitung otomatis gagal: ' + e.message);
+      }
+      btn.disabled = false;
+      btn.textContent = 'Hitung ulang';
+    }, 30);
+  }
+
+  function tampilkanHasilAuto() {
+    var h = autoHasil;
+    if (!h) return;
+    $('auto-hasil').hidden = false;
+    $('auto-angka').textContent = fmt(h.jumlah) + ' butir';
+    $('auto-detail').textContent = 'Ukuran telur terbaca sekitar ' + fmt(h.diameter, 1) + ' piksel. Telur dianggap ' +
+      (h.polaritas === 'gelap' ? 'lebih gelap' : 'lebih terang') + ' dari latar.';
+    var peringatan = '';
+    if (h.diameter < 6) {
+      peringatan = 'Telur terlihat sangat kecil di foto (kurang dari 6 piksel), hitungan sulit diandalkan. Dekatkan kamera.';
+    } else if (h.jumlah === 0) {
+      peringatan = 'Tidak ada objek yang terdeteksi. Coba ubah warna telur, kepekaan, atau ukuran telur.';
+    }
+    $('auto-peringatan').textContent = peringatan;
+    perbaruiBanding();
+    gambarTanda();
+  }
+
+  function perbaruiBanding() {
+    var e = $('auto-banding');
+    if (!autoHasil) { e.textContent = ''; return; }
+    var m = angkaDari($('k-jumlah').value);
+    if (m > 0) {
+      var s = autoHasil.jumlah - m;
+      e.textContent = 'Selisih dengan hitungan manual: ' + (s > 0 ? '+' : '') + fmt(s) + ' butir (' + fmt(s / m * 100, 1) + '%).';
+    } else {
+      e.textContent = 'Isi hitungan manual di bawah untuk melihat selisihnya.';
+    }
+  }
+
+  function gambarTanda() {
+    if (!foto) return;
+    if (!autoHasil || !autoGambar || !$('auto-tanda').checked) { $('kam-hasil').src = foto.url; return; }
+    var c = document.createElement('canvas');
+    c.width = autoGambar.naturalWidth;
+    c.height = autoGambar.naturalHeight;
+    var cx = c.getContext('2d');
+    cx.drawImage(autoGambar, 0, 0);
+    var r = Math.max(3, autoHasil.diameter * 0.55);
+    var lebar = Math.max(1.5, c.width / 700);
+    autoHasil.titik.forEach(function (t) {
+      cx.beginPath();
+      cx.arc(t[0], t[1], r, 0, Math.PI * 2);
+      cx.lineWidth = lebar * 2.2;
+      cx.strokeStyle = '#FFFFFF';
+      cx.stroke();
+      cx.lineWidth = lebar;
+      cx.strokeStyle = '#0C7C7A';
+      cx.stroke();
+    });
+    $('kam-hasil').src = c.toDataURL('image/jpeg', 0.9);
   }
 
   // ------------------------------------------------------------
@@ -1272,7 +1633,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     } else {
       var box = el('div', { class: 'ringkas' }, [
         el('b', { text: fmt(r.estimasi_total) + ' butir' }),
-        el('div', { text: 'perkiraan jumlah seluruh telur' }),
+        el('div', { text: 'perkiraan jumlah seluruh telur (dari hitungan manual)' }),
         el('div', { class: 'catatan-baris', text: 'Rata-rata ' + fmt(r.rata_per_gram, 1) + ' butir per gram dari ' + r.sampel_terhitung + ' sampel.' })
       ]);
       if (r.sampel_terhitung >= 2) {
@@ -1297,20 +1658,37 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
       w.appendChild(tb);
     }
 
+    if (r.estimasi_total_ai !== null) {
+      w.appendChild(el('div', { class: 'ringkas percobaan' }, [
+        el('b', { text: fmt(r.estimasi_total_ai) + ' butir' }),
+        el('div', { text: 'perkiraan dari hitung otomatis (percobaan, belum divalidasi)' }),
+        el('div', { class: 'catatan-baris', text: 'Rata-rata ' + fmt(r.rata_per_gram_ai, 1) + ' butir per gram dari ' + r.sampel_ai + ' sampel.' })
+      ]));
+    }
+
     if (d.sampel.length) {
       var baris = d.sampel.map(function (x, i) {
         var per = (x.jumlah_manual && x.berat_sampel_g) ? fmt(x.jumlah_manual / x.berat_sampel_g, 1) : '-';
+        var oto = '-';
+        if (x.jumlah_ai !== null && x.jumlah_ai !== undefined) {
+          oto = fmt(x.jumlah_ai);
+          if (x.jumlah_manual) {
+            var sl = x.jumlah_ai - x.jumlah_manual;
+            oto += ' (' + (sl > 0 ? '+' : '') + fmt(sl / x.jumlah_manual * 100, 1) + '%)';
+          }
+        }
         return el('tr', null, [
           el('td', { text: String(i + 1) }),
           el('td', { text: fmt(x.berat_sampel_g, 3) }),
           el('td', { text: x.jumlah_manual ? fmt(x.jumlah_manual) : '-' }),
-          el('td', { text: per })
+          el('td', { text: per }),
+          el('td', { text: oto })
         ]);
       });
       var tabel = el('table', { class: 'tabel' }, [
         el('thead', null, [el('tr', null, [
           el('th', { text: 'Sampel' }), el('th', { text: 'Berat (g)' }),
-          el('th', { text: 'Jumlah' }), el('th', { text: 'Butir per gram' })
+          el('th', { text: 'Manual' }), el('th', { text: 'Butir per gram' }), el('th', { text: 'Otomatis' })
         ])]),
         el('tbody', null, baris)
       ]);
@@ -1358,16 +1736,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
         ['Foto dengan catatan kondisi', r.foto_dengan_kondisi],
         ['Sesi telur', r.sesi_telur],
         ['Sampel telur', r.sampel_telur],
-        ['Sampel dengan hitungan manual', r.sampel_dengan_hitungan_manual]
+        ['Sampel dengan hitungan manual', r.sampel_dengan_hitungan_manual],
+        ['Sampel dengan hitung otomatis (percobaan)', r.sampel_dengan_hitung_otomatis],
+        ['Pasangan otomatis dan manual', r.pasangan_otomatis_manual]
       ];
+      if (r.pasangan_otomatis_manual > 0) {
+        baris.push(['Selisih mutlak rata-rata (butir)', fmt(r.selisih_mutlak_rata2_butir, 1)]);
+        baris.push(['Galat mutlak rata-rata (%)', fmt(r.galat_mutlak_rata2_persen, 1)]);
+        baris.push(['Bias rata-rata (%)', fmt(r.bias_rata2_persen, 1)]);
+      }
       var dl = el('dl', { class: 'meta' });
       baris.forEach(function (b) {
         dl.appendChild(el('dt', { text: b[0] }));
-        dl.appendChild(el('dd', { text: fmt(b[1]) }));
+        dl.appendChild(el('dd', { text: typeof b[1] === 'string' ? b[1] : fmt(b[1]) }));
       });
       var w = $('hasil-dataset');
       w.textContent = '';
       w.appendChild(dl);
+      if (r.pasangan_otomatis_manual > 0) {
+        w.appendChild(el('p', { class: 'catatan-baris', text:
+          'Angka otomatis di atas masih percobaan: pengaturan disetel per foto dan fotonya belum diuji secara independen, jadi bukan akurasi yang sah.' }));
+      }
       $('kode-guru').value = '';
     }).catch(function (e) {
       if (!e.sudahDitangani) tampilGalat('galat-dataset', e.message);
@@ -1410,6 +1799,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--teal); }
     $('sesi-pilih').addEventListener('change', aturSesi);
     $('btn-buat-sesi').addEventListener('click', buatSesiBaru);
     $('btn-dataset').addEventListener('click', muatRingkasanDataset);
+    $('btn-auto').addEventListener('click', mulaiAuto);
+    $('btn-hitung-ulang').addEventListener('click', function () { jalankanAuto(false); });
+    $('auto-polaritas').addEventListener('change', function () { jalankanAuto(false); });
+    $('auto-diameter').addEventListener('change', function () { jalankanAuto(false); });
+    $('auto-kepekaan').addEventListener('change', function () { jalankanAuto(false); });
+    $('auto-tanda').addEventListener('change', gambarTanda);
+    $('k-jumlah').addEventListener('input', perbaruiBanding);
 
     // kamera
     $('btn-buka').addEventListener('click', bukaKamera);
